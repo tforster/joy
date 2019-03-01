@@ -1,0 +1,22 @@
+{
+  "name": "joy",
+  "version": "0.0.0",
+  "description": "The Jake and trOY devopsy utility",
+  "main": "joy/joy.js",
+  "scripts": {},
+  "devDependencies": {},
+  "dependencies": {
+    "gulp-watch": "^5.0.1",
+    "minimist": "^1.2.0",
+    "opn": "^5.4.0",
+    "semver": "^5.6.0",
+    "static-server": "^2.2.1",
+    "swagger-parser": "^6.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@ssh.dev.azure.com:v3/geekhacks/Joy/Joy"
+  },
+  "author": "Troy Forster <troy.forster@gmail.com> (http://www.tforster.com)",
+  "license": "MIT"
+}
