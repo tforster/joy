@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ################################################################################
 # joy.sh 
@@ -54,6 +54,13 @@ case "$1" in
     echo Displaying current environment
     printenv | sort
     ;;
+  "wordpress")
+    echo Set Wordpress site_url and home. www and db containers must be running!
+    # Set the siteurl and host for the currently targeted environment
+    docker exec -i $(docker ps --filter "ancestor=$ORG/db.$PRODUCT.$TLD" --format "{{.ID}}") mysql -u$DB_USERNAME $DB_DATABASE -p$DB_PASSWORD <<< "update wp_options set option_value='http://localhost:$WWW_PORT/' where option_name in ('siteurl','home');" 
+    # Ensure the uploads folder is writable
+    docker exec $(docker ps --filter "ancestor=$ORG/www.$PRODUCT.$TLD" --format "{{.ID}}") chown -R www-data: /var/www/html/wp-content/uploads
+  ;;
   "tunnel")
     echo Creating a TCP tunnel between localhost:$2 and $3
     ssh -N -L $2:127.0.0.1:$3 -i ~/.ssh/tforster.pem sandbox.rylli.com
