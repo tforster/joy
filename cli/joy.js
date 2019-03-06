@@ -10,7 +10,7 @@
  * - Every script gets a copy of config including secrets and command line
  *   arguments
  * 
- * Usage: `./utility/joy.js --help`
+ * Usage: `./joy/joy.js --help`
  * 
  ******************************************************************************/
 
@@ -44,6 +44,7 @@ class Joy {
   }
 
   execute() {
+    console.log('task',this.task[0])
     const fn = this._searchModules(tasks, this.task[0]);
     if (fn && typeof (fn) === 'function') {
       fn.call(undefined, this.task, this.args, this.env)

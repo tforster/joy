@@ -1,6 +1,6 @@
 {
   "name": "joy",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "The Jake and trOY devopsy utility",
   "main": "joy/joy.js",
   "scripts": {},
@@ -13,10 +13,18 @@
     "static-server": "^2.2.1",
     "swagger-parser": "^6.0.5"
   },
+  "author": "Troy Forster <troy.forster@gmail.com> (http://www.tforster.com)",
+  "license": "MIT",
+  "keywords": [
+    "devops",
+    "joy"
+  ],
   "repository": {
     "type": "git",
-    "url": "git@ssh.dev.azure.com:v3/geekhacks/Joy/Joy"
+    "url": "git+https://github.com/tforster/joy.git"
   },
-  "author": "Troy Forster <troy.forster@gmail.com> (http://www.tforster.com)",
-  "license": "MIT"
+  "bugs": {
+    "url": "https://github.com/tforster/joy/issues"
+  },
+  "homepage": "https://github.com/tforster/joy#readme"
 }

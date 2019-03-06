@@ -49,7 +49,7 @@ class SwaggerCommands {
 
   async docs() {
     const server = new StaticServer({
-      rootPath: path.join(this.args.p, 'utility/plugins/swagger-ui'), // required, the root of the server file tree
+      rootPath: path.join(this.args.p, 'joy/plugins/swagger-ui'), // required, the root of the server file tree
       port: 1337, // required, the port to listen
       name: 'Joy', // optional, will set "X-Powered-by" HTTP header
       //      host: '10.0.0.100',       // optional, defaults to any interface
