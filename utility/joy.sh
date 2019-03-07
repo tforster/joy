@@ -61,6 +61,10 @@ case "$1" in
     # Ensure the uploads folder is writable
     docker exec $(docker ps --filter "ancestor=$ORG/www.$PRODUCT.$TLD" --format "{{.ID}}") chown -R www-data: /var/www/html/wp-content/uploads
   ;;
+  "signing-keys")
+    openssl ecparam -genkey -name prime256v1 -noout -out secrets/ec_private.pem
+    openssl ec -in secrets/ec_private.pem -pubout -out secrets/ec_public.pem
+    ;;
   "tunnel")
     echo Creating a TCP tunnel between localhost:$2 and $3
     ssh -N -L $2:127.0.0.1:$3 -i ~/.ssh/tforster.pem sandbox.rylli.com
