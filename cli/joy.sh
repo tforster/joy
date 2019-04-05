@@ -16,7 +16,7 @@
 # Cache installation directory of joy.sh
 
 if [ ! -n "$JOY" ]; then
-  export JOY=~/.joy
+  export JOY=~/joy
 fi
 
 # Check that current directory is a Joy project
