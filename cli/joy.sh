@@ -29,6 +29,7 @@ if [ ! -d .joy ]; then
   exit
 fi
 
+
 # Make any project environment variables available to our sub processes
 if [ -f .joy/config.env ]; then
   export $(grep -v '^#' .joy/config.env | xargs)
@@ -58,9 +59,11 @@ case "$1" in
   ;;
 *)
 
+echo $JOY/cli/plugins/$1.sh
+
   # No internal matches so check plugins
-  if [ -f $JOY/plugins/$1.sh ]; then
-    $JOY/plugins/$1.sh "$@"
+  if [ -f $JOY/cli/plugins/$1.sh ]; then
+    $JOY/cli/plugins/$1.sh "$@"
   else
     echo Plugin not found. Joy help to be added here...
   fi
