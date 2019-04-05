@@ -59,7 +59,7 @@ case "$1" in
   ;;
 *)
 
-echo $JOY/cli/plugins/$1.sh
+  echo debug: joy.sh command path "$JOY/cli/plugins/$1.sh"
 
   # No internal matches so check plugins
   if [ -f $JOY/cli/plugins/$1.sh ]; then
