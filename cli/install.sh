@@ -78,8 +78,8 @@ main() {
 
   # Ensure the bootstrap script is executable
   printf "${GREEN}Creating executable...${NORMAL}\n"
-  chmod +x $JOY/cli/joy.sh
   sudo ln -s $JOY/cli/joy.sh /usr/local/bin/joy
+  chmod +x /usr/local/bin/joy
   
   printf "${GREEN}Try joy help or joy version to confirm installation${NORMAL}\n"
 }
