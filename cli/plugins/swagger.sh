@@ -5,12 +5,12 @@ shift
 case "$1" in
 "build")
   echo Build and validate the Swagger definition
-  $joyDir/joy.js $@
+  $JOY/joy.js $@
   ;;
 "view")
   echo View the local Swagger API with Swagger API Browser
-  echo $joyDir/joy.js
-  $joyDir/joy.js $@
+  echo $JOY/joy.js
+  $JOY/joy.js $@
   ;;
 *)
   echo Additional Swagger help goes here

@@ -14,7 +14,10 @@
 ################################################################################
 
 # Cache installation directory of joy.sh
-export joyDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+if [ ! -n "$JOY" ]; then
+  export JOY=~/.joy
+fi
 
 # Check that current directory is a Joy project
 if [ ! -d .joy ]; then
@@ -47,7 +50,7 @@ case "$1" in
   echo Joy version ?
   ;;
 "install")
-  $joyDir/install.sh "$@"
+  $JOY/install.sh "$@"
   ;;
 "env")
   echo Displaying current environment
@@ -56,8 +59,8 @@ case "$1" in
 *)
 
   # No internal matches so check plugins
-  if [ -f $joyDir/plugins/$1.sh ]; then
-    $joyDir/plugins/$1.sh "$@"
+  if [ -f $JOY/plugins/$1.sh ]; then
+    $JOY/plugins/$1.sh "$@"
   else
     echo Plugin not found. Joy help to be added here...
   fi
