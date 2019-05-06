@@ -21,12 +21,14 @@ fi
 
 # Check that current directory is a Joy project
 if [ ! -d .joy ]; then
-  if [ $1 = init ]; then
+  if [ $1 = init ]; then    
     echo Init here
   else
     echo This is not a Joy project. Try running joy init.
   fi
   exit
+else 
+  export JOYPROJECT=$(pwd)
 fi
 
 

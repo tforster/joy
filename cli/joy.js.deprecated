@@ -112,7 +112,7 @@ class Joy {
 }
 
 
-
+console.log(process.env);
 (() => {
   const joy = new Joy();
   joy.prepare()

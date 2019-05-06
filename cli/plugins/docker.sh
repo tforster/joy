@@ -12,13 +12,13 @@ case "$1" in
     docker-compose -f .joy/docker/docker-compose.yml down
     ;;
   "build")
-    echo Building $2 image .joy/docker/$2.dockerfile tagged ${ORG}/$2.${PRODUCT}.${TLD}
-    docker build --force-rm --no-cache -f .joy/docker/$2.dockerfile . -t ${ORG}/$2.${PRODUCT}.${TLD}
+    echo Building $2 image .joy/docker/$2.dockerfile tagged ${ORG}/$2.${PRODUCT}.${ORG}.${TLD}
+    docker build --force-rm --no-cache -f .joy/docker/$2.dockerfile . -t ${ORG}/$2.${PRODUCT}.${ORG}.${TLD}
     ;;
   "push")
-    echo Pushing ${ORG}/$2.${PRODUCT}.${TLD} to Dockerhub
-    docker push ${ORG}/$2.${PRODUCT}.${TLD}
-    curl -X POST --data-urlencode "payload={\"channel\": \"#build\", \"username\": \"buildbot\", \"text\": \"${ORG}/$2.${PRODUCT}.${TLD} pushed to Dockerhub\", \"icon_emoji\": \":docker-hub:\"}" $SLACK_INCOMING_WEBHOOK_URL 
+    echo Pushing ${ORG}/$2.${PRODUCT}.${ORG}.${TLD} to Dockerhub
+    docker push ${ORG}/$2.${PRODUCT}.${ORG}.${TLD}
+    curl -X POST --data-urlencode "payload={\"channel\": \"#build\", \"username\": \"buildbot\", \"text\": \"${ORG}/$2.${PRODUCT}.${ORG}.${TLD} pushed to Dockerhub\", \"icon_emoji\": \":docker-hub:\"}" $SLACK_INCOMING_WEBHOOK_URL 
     ;;  
   *)
   echo Additional Docker help goes here
