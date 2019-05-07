@@ -101,6 +101,10 @@ tbd
 
 ## Change Log
 
+v0.2.0 **Local environment settings** (2019-05-07)
+
+Local .joy folders gain a new config.local.env file. This file is added once then .gitignored so that each installation can maintain its own local settings. Settings that include local path to secrets volume, environment type (e.g. dev, stage or prod), etc.
+
 v0.1.0 **Really early PoC** (2019-04-05)
 
 First commit to Github.

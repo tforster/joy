@@ -37,9 +37,17 @@ if [ -f .joy/config.env ]; then
   export $(grep -v '^#' .joy/config.env | xargs)
 fi
 
+if [ -f .joy/config.local.env ]; then
+  export $(grep -v '^#' .joy/config.local.env | xargs)
+fi
+
 if [ -f secrets/secrets.env ]; then
   export $(grep -v '^#' secrets/secrets.env | xargs)
 fi
+
+# Construct some environment variables from the three files above
+export NODE_ENV=${ENVIRONMENT}
+export COMPOSE_PROJECT_NAME=${PRODUCT}_${ENVIRONMENT}_${DOMAIN}..${TLD}
 
 # Parse command
 case "$1" in
