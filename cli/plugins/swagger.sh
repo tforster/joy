@@ -5,7 +5,8 @@ shift
 case "$1" in
 "build")
   echo Build and validate the Swagger definition
-  $JOY/cli/plugins/SwaggerCommands.js $@
+  echo XXX $JOY/plugins/SwaggerCommands.js
+  $JOY/plugins/SwaggerCommands.js $@
   ;;
 "serve")
   echo Serving Swagger definition
@@ -14,8 +15,8 @@ case "$1" in
   ;;
 "docs")
   echo View the local Swagger API with Swagger API Browser
-  echo debug: Executing $JOY/cli/plugins/SwaggerCommands.js $@
-  $JOY/cli/plugins/SwaggerCommands.js $@
+  echo debug: Executing $JOY/plugins/SwaggerCommands.js $@
+  $JOY/plugins/SwaggerCommands.js $@
   ;;
 *)
   HELP=HELP

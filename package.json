@@ -1,6 +1,6 @@
 {
-  "name": "joy",
-  "version": "0.1.0",
+  "name": "@tforster/joy",
+  "version": "0.3.0",
   "description": "The Jake and trOY devopsy utility",
   "dependencies": {
     "gulp-watch": "^5.0.1",

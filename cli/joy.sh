@@ -20,7 +20,7 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
   SOURCE="$(readlink "$SOURCE")"
   [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
 done
-JOY="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+export JOY="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 # Check that current directory is a Joy project
 if [ ! -d .joy ]; then
