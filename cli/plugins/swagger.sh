@@ -7,6 +7,10 @@ case "$1" in
   echo Build and validate the Swagger definition
   $JOY/cli/joy.js $@
   ;;
+"serve")
+  echo Serving Swagger definition
+  static-server -p 10010 -c "*" -i swagger.json api
+  ;;
 "docs")
   echo View the local Swagger API with Swagger API Browser
   echo debug: Executing $JOY/cli/plugins/SwaggerCommands.js $@

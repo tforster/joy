@@ -1,7 +1,7 @@
 # Shift args so that $2 becomes $1, etc
 shift;
 
-export IMAGE_NAME=${ORG}/$2.${DOMAIN}.${TLD}
+export IMAGE_NAME=${ORG}/$2.${PRODUCT}.${TLD}
 
 # Parse sub-command
 case "$1" in
