@@ -18,6 +18,13 @@ case "$1" in
   ssh -L $2:127.0.0.1:$2 -i ~/.ssh/tforster.pem $3 -N
   ;;
 *)
-  echo Navigate command not recognized
+  HELP=HELP
   ;;
 esac
+
+if [ $HELP ]; then
+  echo "Usage: joy navigate [options]"
+  echo 
+  echo "Options:"
+  echo "  tunnel {local and remote port} {remote-host} {username} Create an SSH tunnel"
+fi

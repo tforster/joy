@@ -16,6 +16,16 @@ case "$1" in
   echo Creates a restore of the wordpress database
   ;;
 *)
-  echo Additional Wordpress help goes here
+  HELP=HELP
   ;;
 esac
+
+if [ $HELP ]; then
+  echo "Usage: joy docker [options]"
+  echo 
+  echo "Options:"
+  echo "  urls {remote-port}  Rewrites the wp_options site_url and home properties"
+  echo "  backup              Backs up the MySql db (not tested yet)"
+  echo "  restore             Restores the MySql db (not tested yet)"
+
+fi

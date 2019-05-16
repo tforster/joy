@@ -1,4 +1,4 @@
-# joy v0.1.0
+# joy v0.3.0
 
 The Jake and trOY devops-y utility
 
@@ -23,21 +23,13 @@ The Jake and trOY devops-y utility
 
 ## Installation
 
-via curl
-
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/tforster/joy/develop/cli/install.sh)"
-```
-
-via wget
-
-```bash
-sh -c "$(wget https://raw.githubusercontent.com/tforster/joy/develop/cli/install.sh -O -)"
+npx joy {command} [options]
 ```
 
 ## Usage
 
-Once installed you can interact with Joy by simply typing `joy {command} [param1] [param2] [param3] [etc]`. Be sure to run `joy update` periodically to ensure you have the latest version.
+Once installed you can interact with Joy by simply typing `npx joy {command} [param1] [param2] [param3] [etc]`.
 
 ### Configure a new Joy project
 
@@ -100,6 +92,10 @@ Note that the example above sets `"useWSL": true`. This is necessary if running 
 tbd
 
 ## Change Log
+
+v0.3.0 **NPX'fied** (2019-05-16)
+
+Changed installation strategy from SSH and Git based to NPM/NPX. Also improved the basic help text for each command.
 
 v0.2.0 **Local environment settings** (2019-05-07)
 

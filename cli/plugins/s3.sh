@@ -40,8 +40,15 @@ case "$1" in
   ;;
 
 *)
-  echo Additional utils help goes here
+  HELP=HELP
   ;;
 esac
 
+if [ $HELP ]; then
+  echo "Usage: joy docker [options]"
+  echo 
+  echo "Options:"
+  echo "  new-web-bucket {bucket-name} [{region} {profile}] Provision a bucket in the region using the ~/.aws/credentials[profile]"
+  echo "  invalidate-cloudfront                             Comming soon"
+fi
 

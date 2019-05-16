@@ -5,11 +5,12 @@ shift
 case "$1" in
 "build")
   echo Build and validate the Swagger definition
-  $JOY/cli/joy.js $@
+  $JOY/cli/plugins/SwaggerCommands.js $@
   ;;
 "serve")
   echo Serving Swagger definition
-  static-server -p 10010 -c "*" -i swagger.json api
+  # port 10010, no caching, fully open CORS, default file is swagger.json
+  static-server -p 10010 -z -c "*" -i swagger.json api
   ;;
 "docs")
   echo View the local Swagger API with Swagger API Browser
@@ -17,6 +18,15 @@ case "$1" in
   $JOY/cli/plugins/SwaggerCommands.js $@
   ;;
 *)
-  echo Additional Swagger help goes here
+  HELP=HELP
   ;;
 esac
+
+if [ $HELP ]; then
+  echo "Usage: joy docker [options]"
+  echo 
+  echo "Options:"
+  echo "  build   Builds and validates definitions before copying to /api/swagger"
+  echo "  serve   Starts an http server on 10010 and serves /api/swagger/swagger.json for docs"
+  echo "  docs    Starts an http server on 1337 that serves Swagger UI"
+fi

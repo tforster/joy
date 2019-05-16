@@ -23,5 +23,17 @@ case "$1" in
     curl -X POST --data-urlencode "payload={\"channel\": \"#build\", \"username\": \"buildbot\", \"text\": \"${IMAGE_NAME} pushed to Dockerhub\", \"icon_emoji\": \":docker-hub:\"}" $SLACK_INCOMING_WEBHOOK_URL 
     ;;  
   *)
-  echo Additional Docker help goes here
+  HELP=HELP
+  ;;
 esac
+
+if [ $HELP ]; then
+  echo "Usage: joy docker [options]"
+  echo 
+  echo "Options:"
+  echo "  start         Start the stack"
+  echo "  stop          Stop the stack"
+  echo "  build {name}  Build a new image"
+  echo "  push {name}   Push named image to DockerHub"
+fi
+

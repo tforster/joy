@@ -13,15 +13,18 @@
 #
 ################################################################################
 
-# Cache installation directory of joy.sh
-
-if [ ! -n "$JOY" ]; then
-  export JOY=~/joy
-fi
+# Cache installation directory of joy.sh (https://stackoverflow.com/questions/59895/get-the-source-directory-of-a-bash-script-from-within-the-script-itself)
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+JOY="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 # Check that current directory is a Joy project
 if [ ! -d .joy ]; then
-  if [ $1 = init ]; then    
+  if [ "$1" == "init" ]; then    
     echo Init here
   else
     echo This is not a Joy project. Try running joy init.
@@ -67,16 +70,33 @@ case "$1" in
   echo Displaying current environment
   printenv | sort
   ;;
+"help")
+  HELP=HELP
+  ;;
 *)
 
-  echo debug: joy.sh command path "$JOY/cli/plugins/$1.sh"
-
   # No internal matches so check plugins
-  if [ -f $JOY/cli/plugins/$1.sh ]; then
-    $JOY/cli/plugins/$1.sh "$@"
+  if [ -f $JOY/plugins/$1.sh ]; then
+    $JOY/plugins/$1.sh "$@"
   else
-    echo Plugin not found. Joy help to be added here...
+    echo The requested command '"'$1'"' was not found.
+    echo
+    HELP=HELP
   fi
   ;;
 
 esac
+
+if [ $HELP ]; then
+  echo "Usage: joy {command} [options]"
+  echo 
+  echo "Commands:"
+  echo "  docker:    Build and push images, start/stop predefined stack of containers"
+  echo "  navigate:  SSH and SSH Tunnels"
+  echo "  s3:        Provision S3 buckets as static servers, deploy to buckets and invalidate Cloudfront caches"
+  echo "  swagger:   Build, validate, serve and view Swagger documentation"
+  echo "  utils:     Create JWT signing keys"
+  echo "  wordpress: Configure site_url and home URLs"
+  echo
+  echo "Type joy {command} for more help"
+fi

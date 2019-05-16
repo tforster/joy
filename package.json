@@ -2,9 +2,6 @@
   "name": "joy",
   "version": "0.1.0",
   "description": "The Jake and trOY devopsy utility",
-  "main": "joy/joy.js",
-  "scripts": {},
-  "devDependencies": {},
   "dependencies": {
     "gulp-watch": "^5.0.1",
     "minimist": "^1.2.0",
@@ -15,6 +12,9 @@
   },
   "author": "Troy Forster <troy.forster@gmail.com> (http://www.tforster.com)",
   "license": "MIT",
+  "bin": {
+    "joy": "./cli/joy.sh"
+  },
   "keywords": [
     "devops",
     "joy"
