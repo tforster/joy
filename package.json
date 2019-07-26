@@ -1,6 +1,6 @@
 {
   "name": "joy",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "The Jake and trOY devopsy utility",
   "main": "joy/joy.js",
   "scripts": {},

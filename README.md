@@ -1,4 +1,4 @@
-# joy v0.0.0
+# joy v0.0.1
 
 The Jake and trOY Devopsy utility
 
@@ -73,5 +73,9 @@ Note that the example above sets `"useWSL": true`. This is necessary if running 
 ## Tips and Tricks
 
 ## Change Log
+
+v0.0.1 **Really early PoC** (2019-07-26)
+
+* Added `joy test a11y` for running basic accessibility tests
 
 v0.0.0 **Really early PoC** (2019-03-01)
