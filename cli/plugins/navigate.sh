@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Shift args so that $2 becomes $1, etc
 shift
 
@@ -15,5 +17,14 @@ case "$1" in
   echo Create a TCP tunnel via joy.sh tunnel {local and remote port} {remote-host}
   ssh -L $2:127.0.0.1:$2 -i ~/.ssh/tforster.pem $3 -N
   ;;
-*) ;;
+*)
+  HELP=HELP
+  ;;
 esac
+
+if [ $HELP ]; then
+  echo "Usage: joy navigate [options]"
+  echo 
+  echo "Options:"
+  echo "  tunnel {local and remote port} {remote-host} {username} Create an SSH tunnel"
+fi

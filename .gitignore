@@ -1,5 +1,6 @@
 ### Project ###
 .vscode
+
 ### OSX and Windows ###
 
 .DS_Store
@@ -329,3 +330,4 @@ __pycache__/
 
 # Cake - Uncomment if you are using it
 # tools/
+

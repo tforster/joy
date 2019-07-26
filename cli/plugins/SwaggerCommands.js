@@ -1,3 +1,7 @@
+#!/usr/bin/env node
+
+'use strict';
+
 const fs = require('fs');
 const opn = require('opn');
 const path = require('path');
@@ -11,12 +15,13 @@ class SwaggerCommands {
   constructor(task, args, env) {
     this.task = task;
     this.args = args;
+    this.joyPath = '~/joy';
     this.env = env;
-    // Where to deposit the built swagger files (follows Swagger Node convention)
-    this.apiSource = path.join(args.cwd, '/api/swagger/');
+
+    this.apiSource = path.join(process.env.JOYPROJECT, '/api/swagger/');
     // Path to Swagger source folder (follows Joy convention)
-    this.swaggerSource = path.join(args.cwd, '/swagger/');
-    this.semver = '0.0.0'
+    this.swaggerSource = path.join(process.env.JOYPROJECT, '/swagger/');
+    this.semver = '0.0.0';
   }
 
   /**
@@ -24,10 +29,10 @@ class SwaggerCommands {
    */
   watch() {
     const self = this;
-    return watch(self.swaggerSource, async function () {
-      await self.build().catch(reason => {
-        console.log(`swagger.yaml errored at ${new Date().toISOString()} because ${reason}`)
-      })
+    return watch(self.swaggerSource, async function() {
+      await self.build().catch((reason) => {
+        console.log(`swagger.yaml errored at ${new Date().toISOString()} because ${reason}`);
+      });
     });
   }
 
@@ -49,20 +54,15 @@ class SwaggerCommands {
 
   async docs() {
     const server = new StaticServer({
-      rootPath: path.join(this.args.p, 'utility/plugins/swagger-ui'), // required, the root of the server file tree
-      port: 1337, // required, the port to listen
-      name: 'Joy', // optional, will set "X-Powered-by" HTTP header
-      //      host: '10.0.0.100',       // optional, defaults to any interface
-      cors: '*', // optional, defaults to undefined
-      followSymlink: true, // optional, defaults to a 404 error
-      // templates: {
-      //   index: 'foo.html',      // optional, defaults to 'index.html'
-      //   notFound: '404.html'    // optional, defaults to undefined
-      // }
+      rootPath: path.join(process.env.HOME, 'joy/cli/plugins/swagger-ui'),
+      port: 1337,
+      name: 'Joy',
+      cors: '*',
+      followSymlink: true
     });
 
     server.start(() => {
-      const apiurl = `${encodeURIComponent(process.env.SWAGGER_FILE_URI)}`;
+      const apiurl = `${encodeURIComponent('http://localhost:10010/swagger')}`;
       console.log(`Serving Swagger docs from ${server.rootPath} on http://localhost:${server.port}/#/${apiurl}`);
       opn(`http://localhost:1337/#/${apiurl}`).then(() => {});
     });
@@ -79,10 +79,9 @@ class SwaggerCommands {
         } else {
           return resolve(JSON.parse(result));
         }
-      })
-    })
+      });
+    });
   }
-
 
   /**
    * Compiles all the swagger files into one master Swagger.yaml
@@ -90,20 +89,19 @@ class SwaggerCommands {
   async _compileSwagger() {
     return new Promise((resolve, reject) => {
       SwaggerParser.bundle(`${this.swaggerSource}index.yaml`, {
-          resolve: {
-            external: true
-          }
-        })
-        .then(swaggerJSON => {
+        resolve: {
+          external: true
+        }
+      })
+        .then((swaggerJSON) => {
           resolve(swaggerJSON);
         })
-        .catch(reason => {
+        .catch((reason) => {
           console.error(`Bundle errored with ${reason}`);
           reject(reason);
         });
     });
   }
-
 
   /**
    * Validates the master Swagger.yaml created earlier with _compileSwagger()
@@ -116,22 +114,17 @@ class SwaggerCommands {
         } else {
           return resolve();
         }
-      })
+      });
     });
-
   }
-
-
-
 
   /**
    * Wrapper around NPMs semver library to allow easy patch increments
-   * @param {} ver 
+   * @param {} ver
    */
   _bumpSemVer(ver) {
     return semver.inc(ver, 'patch');
   }
-
 
   /**
    * Writes the in-memory package and swagger JSON objects to package.json and Swagger.yaml respectivley
@@ -150,14 +143,25 @@ class SwaggerCommands {
   }
 }
 
-exports.swagger = (task, args, env) => {
-  const swaggerCommands = new SwaggerCommands(task, args, env);
-
+(() => {
+  const args = process.argv.slice(2);
+  const task = args[0];
+  const swaggerCommands = new SwaggerCommands(task, args, process.env);
   if (task && task.length && task.length > 1) {
-    const cmd = task[1];
-    console.log(cmd);
-    return swaggerCommands[cmd]();
+    return swaggerCommands[task]();
   } else {
     console.error('no cmd?');
   }
-}
+})();
+
+// exports.swagger = (task, args, env) => {
+//   const swaggerCommands = new SwaggerCommands(task, args, env);
+
+//   if (task && task.length && task.length > 1) {
+//     const cmd = task[1];
+//     console.log(cmd);
+//     return swaggerCommands[cmd]();
+//   } else {
+//     console.error('no cmd?');
+//   }
+// };

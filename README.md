@@ -1,6 +1,6 @@
-# joy v0.0.1
+# joy v0.3.1
 
-The Jake and trOY Devopsy utility
+The Jake and trOY devops-y utility
 
 ## Built With
 
@@ -21,16 +21,19 @@ The Jake and trOY Devopsy utility
 * Git
 * A code editor
 
-## Runtime Installation
+## Installation
 
-1. Clone the repository `git clone git@ssh.dev.azure.com:v3/geekhacks/Joy/Joy`
-1. Checkout the develop branch for now since we do not have a production release on master yet `git checkout develop`.
-1. Fetch Node dependencies with `npm i`.
-1. Add the Joy utility folder to your path after adjusting the following to suit your shell and environment `export PATH=/home/tforster/dev/geekhacks/joy/utility:$PATH`
-1. If you have added the export line to your .*shrc file the don't forget to `source` it before continuing
-1. Test it out by navigating to the root of a Joy enabled project and run `joy.sh env`. This should display all environment variables including those in .joy/config.env and secrets/secrets.env.
+```bash
+npx joy {command} [options]
+```
 
-### Notes for .joy/config.env
+## Usage
+
+Once installed you can interact with Joy by simply typing `npx joy {command} [param1] [param2] [param3] [etc]`.
+
+### Configure a new Joy project
+
+Instructions here to explain how to use `joy init` and what to change in the config.env file.
 
 To view Swagger docs and send Slack notifications to the #build channel ensure that the project config.env has the following two lines. If you're running your API from a Docker container then substitute the proper URI. The Slack webhook URL is masked so we don't accidentally copy/paste and spam the wrong client's channel.
 
@@ -38,6 +41,20 @@ To view Swagger docs and send Slack notifications to the #build channel ensure t
 SWAGGER_FILE_URI=http://localhost:10010/swagger
 SLACK_INCOMING_WEBHOOK_URL https://hooks.slack.com/services/T7KSWL4E9/BGL0HSVB2/************************
 ```
+
+### Joy Commands
+
+Commands are grouped into five categories:
+
+* Docker
+* Navigation
+* Swagger
+* Utilities
+* Wordpress
+
+### Notes for .joy/config.env
+
+tbd
 
 ## Developer Installation and Setup
 
@@ -55,7 +72,7 @@ Create an appropriate configuration in ./vscode/launch.json
     "type": "node",
     "request": "launch",
     "name": "Debug joy.js",
-    "program": "${workspaceFolder}/utility/joy.js",
+    "program": "${workspaceFolder}/joy/joy.js",
     "useWSL": true,
     "args": [
       "Joy",
@@ -72,10 +89,22 @@ Note that the example above sets `"useWSL": true`. This is necessary if running 
 
 ## Tips and Tricks
 
+tbd
+
 ## Change Log
 
-v0.0.1 **Really early PoC** (2019-07-26)
+v0.3.1 **A11Y** (2019-07-26)
 
-* Added `joy test a11y` for running basic accessibility tests
+Added new `test a11y` command for basic accessibility testing
 
-v0.0.0 **Really early PoC** (2019-03-01)
+v0.3.0 **NPX'fied** (2019-05-16)
+
+Changed installation strategy from SSH and Git based to NPM/NPX. Also improved the basic help text for each command.
+
+v0.2.0 **Local environment settings** (2019-05-07)
+
+Local .joy folders gain a new config.local.env file. This file is added once then .gitignored so that each installation can maintain its own local settings. Settings that include local path to secrets volume, environment type (e.g. dev, stage or prod), etc.
+
+v0.1.0 **Really early PoC** (2019-04-05)
+
+First commit to Github.

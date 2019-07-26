@@ -8,6 +8,13 @@ case "$1" in
   openssl ec -in secrets/ec_private.pem -pubout -out secrets/ec_public.pem
   ;;
 *)
-  echo Additional utils help goes here
+  HELP=HELP
   ;;
 esac
+
+if [ $HELP ]; then
+  echo "Usage: joy docker [options]"
+  echo 
+  echo "Options:"
+  echo "  signing-keys  Generates ec public and private key to /secrets folder"
+fi
