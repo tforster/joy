@@ -1,4 +1,4 @@
-# joy v0.3.1
+# joy v0.3.2
 
 The Jake and trOY devops-y utility
 
@@ -93,9 +93,11 @@ tbd
 
 ## Change Log
 
-v0.3.1 **A11Y** (2019-07-26)
+v0.3.2 **A11Y** (2019-07-26)
 
 Added new `test a11y` command for basic accessibility testing
+
+v0.3.1 **Bug**
 
 v0.3.0 **NPX'fied** (2019-05-16)
 
