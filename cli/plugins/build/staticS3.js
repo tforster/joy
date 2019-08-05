@@ -12,6 +12,7 @@ const rev = require('gulp-rev');
 const usemin = require('gulp-usemin');
 
 class StaticS3 {
+
   constructor(config, stage) {
     this.config = config;
     this.stage = stage;
@@ -33,7 +34,35 @@ class StaticS3 {
     // this.marked = marked;
     // this.marked.setOptions(this.config.marked);
     // this.slack = require('gulp-slack')(this.config.slack);
-    console.log(`Using target: ${stage} and path: ${this.buildPath}`)
+    console.log(`Using target: ${stage} from ${this.config.src} to ${this.buildPath}`)
+  }
+
+  /**
+ * Constructs .html views from .ejs templates in src/views
+ *
+ * @returns
+ * @memberof Tasks
+ */
+  _compileViews() {
+    return new Promise((resolve, reject) => {
+      let pageData = {};
+
+      // See https://github.com/mde/ejs for options
+      gulp.src(`${this.config.src}/views/**/*.html`, pageData)
+
+        .on('error', e => {
+          console.error('e', e);
+          reject(e)
+        })
+        .pipe(debug())
+        .pipe(ejs({}))
+
+        .pipe(rename({ extname: '.html' }))
+        .pipe(gulp.dest(this.buildPath))
+
+        .on('end', resolve);
+
+    });
   }
 
   async build() {
@@ -43,32 +72,32 @@ class StaticS3 {
 
     await this._copyResources([
       {
-        glob: ['./src/favicon.ico'],
+        glob: [`${this.config.src}/favicon.ico`],
         dest: '/'
       },
       {
-        glob: ['./src/img/**/*-crushed.*'],
-        dest: '/img/'
+        glob: [`${this.config.src}/images/**/*.*`],
+        dest: '/images/'
       },
       {
-        glob: ['./src/video/*.mp4'],
+        glob: [`${this.config.src}/video/*.mp4`],
         dest: '/video/'
       },
       {
-        glob: ['./src/fonts/**/*'],
+        glob: [`${this.config.src}/fonts/**/*`],
         dest: '/fonts/'
       },
       {
-        glob: ['./src/js/**/*.js'],
+        glob: [`${this.config.src}/js/**/*.js`],
         dest: '/js/'
       },
       {
-        glob: ['./src/css/**/*'],
+        glob: [`${this.config.src}/css/**/*`],
         dest: '/css/'
       },
       {
-        glob: ['./src/img/src/*.svg'],
-        dest: '/img/'
+        glob: [`${this.config.src}/images/src/*.svg`],
+        dest: '/images/'
       }
     ])
       .catch(e => {
@@ -96,33 +125,7 @@ class StaticS3 {
   // }
 
 
-  /**
-   * Constructs .html views from .ejs templates in src/views
-   *
-   * @returns
-   * @memberof Tasks
-   */
-  _compileViews() {
-    return new Promise((resolve, reject) => {
-      let pageData = {};
 
-      // See https://github.com/mde/ejs for options
-      gulp.src('./src/views/*.html', pageData)
-
-        .on('error', e => {
-          console.error('e', e);
-          reject(e)
-        })
-        .pipe(debug())
-        .pipe(ejs({}))
-
-        .pipe(rename({ extname: '.html' }))
-        .pipe(gulp.dest(this.buildPath))
-
-        .on('end', resolve);
-
-    });
-  }
 
 
   /**
@@ -161,8 +164,8 @@ class StaticS3 {
    */
   _minh() {
     const self = this;
-    return new Promise(function (resolve, reject) {
-      gulp.src(self.buildPath + '/*.html')
+    return new Promise((resolve, reject) => {
+      gulp.src(`${self.buildPath}/**.*.html`)
         .on('error', reject)
         .pipe(usemin({
           css: [function () { return minifyCss(); }, function () { return rev(); }],
