@@ -1,22 +1,60 @@
 #!/usr/bin/env node
+
 'use strict';
 const fs = require('fs');
 const prog = require('caporal');
 const path = require('path');
-const pa11y = require('pa11y');
+
+// Joy modules
+const Build = require('./plugins/build');
 const Docker = require('./plugins/docker');
 const Test = require('./plugins/test');
-const util = require('util');
 
 class Joy {
   constructor() {
-    this.env = process.env;
+    // Setup an instance of caporal (prog from their example)
     this.prog = prog;
     this.prog.version('1.0.0');
+
+    // Fetch the config.json file (if this is a Joy project)
+    this.config = this._config();
+
+    // Cache the environment variables (Follows this._config() since we may have just created some while parsing the config file)
+    this.env = process.env;
   }
 
-  addCommand(commandObj) {
-    new commandObj(this);
+  /**
+   * Add functionality from a Joy specific required module
+   * 
+   * @param {*} commandModule 
+   */
+  use(commandModule) {
+    // All command modules must expose a constructor that accepts `this` and mutates this.prog. Also allows module to use this.config and this.invoke
+    new commandModule(this);
+  }
+
+
+  /**
+   * Parse .joy/config.json if it exists, expanding any key/val pairs in the env object to environment variables
+   * 
+   */
+  _config() {
+    let config = Object.create({});
+    try {
+      const configFile = fs.readFileSync(path.join(process.cwd(), './.joy/config.json'), 'utf-8');
+      if (configFile) {
+        config = JSON.parse(configFile);
+        // Expand any environment variables that might be in the config file
+        for (let p in config.env) {
+          process.env[p] = config.env[p];
+        }
+      }
+      return config;
+    }
+    catch (e) {
+      console.log(e)
+      return config;
+    }
   }
 
 
@@ -68,8 +106,10 @@ class Joy {
   const joy = new Joy();
 
   // Add plugins from the ./plugins directory
-  joy.addCommand(Docker);
-  joy.addCommand(Test);
+  joy.use(Build)
+  joy.use(Docker);
+  joy.use(Test);
+
 
   const code = await joy.prog.parse(process.argv);
 
