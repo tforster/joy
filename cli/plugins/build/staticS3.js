@@ -12,7 +12,6 @@ const rev = require('gulp-rev');
 const usemin = require('gulp-usemin');
 
 class StaticS3 {
-
   constructor(config, stage) {
     this.config = config;
     this.stage = stage;
@@ -34,25 +33,26 @@ class StaticS3 {
     // this.marked = marked;
     // this.marked.setOptions(this.config.marked);
     // this.slack = require('gulp-slack')(this.config.slack);
-    console.log(`Using target: ${stage} from ${this.config.src} to ${this.buildPath}`)
+    console.log(`Using target: ${stage} from ${this.config.src} to ${this.buildPath}`);
   }
 
   /**
- * Constructs .html views from .ejs templates in src/views
- *
- * @returns
- * @memberof Tasks
- */
+   * Constructs .html views from .ejs templates in src/views
+   *
+   * @returns
+   * @memberof Tasks
+   */
   _compileViews() {
     return new Promise((resolve, reject) => {
       let pageData = {};
 
       // See https://github.com/mde/ejs for options
-      gulp.src(`${this.config.src}/views/**/*.html`, pageData)
+      gulp
+        .src(`${this.config.src}/views/**/*.html`, pageData)
 
-        .on('error', e => {
+        .on('error', (e) => {
           console.error('e', e);
-          reject(e)
+          reject(e);
         })
         .pipe(debug())
         .pipe(ejs({}))
@@ -61,14 +61,15 @@ class StaticS3 {
         .pipe(gulp.dest(this.buildPath))
 
         .on('end', resolve);
-
     });
   }
 
   async build() {
     await del([`${this.buildPath}**/*`]);
 
-    await this._compileViews().catch(e => { console.error('caught1', e) });
+    await this._compileViews().catch((e) => {
+      console.error('caught1', e);
+    });
 
     await this._copyResources([
       {
@@ -76,12 +77,12 @@ class StaticS3 {
         dest: '/'
       },
       {
-        glob: [`${this.config.src}/images/**/*.*`],
-        dest: '/images/'
+        glob: [`${this.config.src}/img/**/*.*`],
+        dest: '/img/'
       },
       {
-        glob: [`${this.config.src}/video/*.mp4`],
-        dest: '/video/'
+        glob: [`${this.config.src}/media/**/*.*`],
+        dest: '/media/'
       },
       {
         glob: [`${this.config.src}/fonts/**/*`],
@@ -96,18 +97,18 @@ class StaticS3 {
         dest: '/css/'
       },
       {
-        glob: [`${this.config.src}/images/src/*.svg`],
-        dest: '/images/'
+        glob: [`${this.config.src}/img/src/*.svg`],
+        dest: '/img/'
       }
-    ])
-      .catch(e => {
-        console.error('caught', e);
-      });
+    ]).catch((e) => {
+      console.error('caught', e);
+    });
 
     if (this.stage !== 'dev') {
       await this._minh();
+      // Remove js and css folders that have now been concatenated to single files in the root
+      await del([`${this.buildPath}/js`, `${this.buildPath}/css`]);
     }
-
   }
 
   // /**
@@ -124,10 +125,6 @@ class StaticS3 {
   //   }
   // }
 
-
-
-
-
   /**
    * Copies resources provided in resources hash
    * Removes any occurrences of `-crushed` presumably added by either handbrake (mp4) or tinypng (jpg, jpeg and png)
@@ -137,24 +134,28 @@ class StaticS3 {
    * @memberof Tasks
    */
   _copyResources(resources) {
-    return Promise.all(resources.map(resource => {
-      return new Promise((resolve, reject) => {
-        gulp.src(resource.glob, { allowEmpty: true })
-          .on('error', e => {
-            console.error('error in copyresources', e);
-            reject();
-          })
-          .pipe(rename((path) => {
-            if ('.jpg.jpeg.png.mp4'.indexOf(path.extname.toLowerCase() > -1)) {
-              path.basename = path.basename.replace(/-crushed$/gi, '');
-            }
-          }))
-          .pipe(gulp.dest(this.buildPath + resource.dest))
-          .on('end', resolve)
-      });
-    }));
+    return Promise.all(
+      resources.map((resource) => {
+        return new Promise((resolve, reject) => {
+          gulp
+            .src(resource.glob, { allowEmpty: true })
+            .on('error', (e) => {
+              console.error('error in copyresources', e);
+              reject();
+            })
+            .pipe(
+              rename((path) => {
+                if ('.jpg.jpeg.png.mp4'.indexOf(path.extname.toLowerCase() > -1)) {
+                  path.basename = path.basename.replace(/-crushed$/gi, '');
+                }
+              })
+            )
+            .pipe(gulp.dest(this.buildPath + resource.dest))
+            .on('end', resolve);
+        });
+      })
+    );
   }
-
 
   /**
    * Minifies and concatenates globbed .HTML files including nested Javascript and CSS resources
@@ -165,30 +166,52 @@ class StaticS3 {
   _minh() {
     const self = this;
     return new Promise((resolve, reject) => {
-      gulp.src(`${self.buildPath}/**.*.html`)
+      console.log(self.buildPath);
+      gulp
+        .src(`${self.buildPath}/**/*.html`)
+        .pipe(debug())
         .on('error', reject)
-        .pipe(usemin({
-          css: [function () { return minifyCss(); }, function () { return rev(); }],
-          html: [function () { return htmlmin({ collapseWhitespace: true, removeComments: true }); }],
-          js: [function () {
-            return babili({
-              mangle: {
-                keepClassNames: true
+        .pipe(
+          usemin({
+            css: [
+              function() {
+                return minifyCss();
+              },
+              function() {
+                return rev();
               }
-            });
-          }, function () { return rev(); }],
-          inlinejs: [babili({
-            mangle: {
-              keepClassNames: true
-            }
-          })],
-          inlinecss: [minifyCss(), 'concat']
-        }))
+            ],
+            html: [
+              function() {
+                return htmlmin({ collapseWhitespace: true, removeComments: true });
+              }
+            ],
+            js: [
+              function() {
+                return babili({
+                  mangle: {
+                    keepClassNames: true
+                  }
+                });
+              },
+              function() {
+                return rev();
+              }
+            ],
+            inlinejs: [
+              babili({
+                mangle: {
+                  keepClassNames: true
+                }
+              })
+            ],
+            inlinecss: [minifyCss(), 'concat']
+          })
+        )
         .pipe(gulp.dest(self.buildPath))
         .on('end', resolve);
-    })
+    });
   }
-
 
   /**
    * Compress png and jpgs. Calling manually for now until I can figure the optimal way to ensure I stay below 500 calls per month
@@ -197,15 +220,16 @@ class StaticS3 {
    * @memberof Tasks
    */
   async _crushPng() {
-    return await gulp.src(['./src/img/src/**/*.jpg', './src/img/src/**/*.png'])
-      .pipe(tinypng(this.config.tinypng.apikey))
-      .pipe(rename((path) => {
-        path.basename += '-crushed';
-      }))
+    return await gulp
+      .src(['./src/img/src/**/*.jpg', './src/img/src/**/*.png'])
+      .pipe(this.tinypng(this.config.tinypng.apikey))
+      .pipe(
+        rename((path) => {
+          path.basename += '-crushed';
+        })
+      )
       .pipe(gulp.dest('./src/img'));
   }
 }
 
-
-
-module.exports = StaticS3
+module.exports = StaticS3;

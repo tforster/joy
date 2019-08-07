@@ -25,18 +25,17 @@ class Joy {
 
   /**
    * Add functionality from a Joy specific required module
-   * 
-   * @param {*} commandModule 
+   *
+   * @param {*} commandModule
    */
   use(commandModule) {
     // All command modules must expose a constructor that accepts `this` and mutates this.prog. Also allows module to use this.config and this.invoke
     new commandModule(this);
   }
 
-
   /**
    * Parse .joy/config.json if it exists, expanding any key/val pairs in the env object to environment variables
-   * 
+   *
    */
   _config() {
     let config = Object.create({});
@@ -50,36 +49,31 @@ class Joy {
         }
       }
       return config;
-    }
-    catch (e) {
-      console.log(e)
+    } catch (e) {
       return config;
     }
   }
 
-
   /**
    * Indicates whether the CWD is a Joy enabled project (e.g. is the parent to a .joy subdirectory)
-   * 
+   *
    */
   isJoy() {
     try {
       const stats = fs.statSync(path.join(process.cwd(), './.joy'));
       return stats && stats.isDirectory();
-    }
-    catch (e) {
+    } catch (e) {
       return false;
     }
   }
 
-
   /**
-   * Simple wrapper to exec a child process to call an external binary. 
-   * Child stdout and stderror are piped directly to ours.
+   * Simple wrapper to exec a child process to call an external binary.
+   * Child stdout and stderr are piped directly to ours.
    * Returns a shell success code
-   * 
-   * @param {*} cmd 
-   * @param {*} params 
+   *
+   * @param {*} cmd
+   * @param {*} params
    */
   invoke(cmd, params) {
     return new Promise((resolve, reject) => {
@@ -89,27 +83,25 @@ class Joy {
       child.stdout.pipe(process.stdout);
       child.stderr.pipe(process.stderr);
 
-      child.on('close', code => {
+      child.on('close', (code) => {
         resolve(code);
       });
 
-      child.on('error', err => {
+      child.on('error', (err) => {
         reject(err);
       });
-    })
+    });
   }
 }
-
 
 (async () => {
   // Create a new instance of Joy
   const joy = new Joy();
 
   // Add plugins from the ./plugins directory
-  joy.use(Build)
+  joy.use(Build);
   joy.use(Docker);
   joy.use(Test);
-
 
   const code = await joy.prog.parse(process.argv);
 

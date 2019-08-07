@@ -6,7 +6,7 @@
     "node": true
   },
   "parserOptions": {
-    "ecmaVersion": 2017,
+    "ecmaVersion": 2018,
     "ecmaFeatures": {
       "jsx": true
     },
@@ -20,7 +20,5 @@
     "no-unused-vars": "warn",
     "constructor-super": "warn",
     "valid-typeof": "warn"
-  },
-  "plugins": ["jest"],
-  "extends": ["plugin:jest/recommended"]
+  }
 }

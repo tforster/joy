@@ -1,8 +1,16 @@
 'use strict';
 
+/**
+ * Build implements Joy commands for static S3 websites, swagger docs and docker images.
+ * 
+ */
 class Build {
-  constructor(joy) {
 
+  /**
+   * @param {*} joy : Instance of a Joy class c/w config.json, env and helper functions
+   * 
+   */
+  constructor(joy) {
     const prog = joy.prog;
     prog
       .command('build', 'Build a Joy project')
@@ -14,21 +22,24 @@ class Build {
         const code = await this[args.subcommand].call(joy, options, logger);
         return code;
       });
-
   }
 
-  async staticS3(options, logger) {
+
+  /**
+   * @param {*} options : Additional CLI flags
+   * 
+   */
+  async staticS3(options) {
     // New instance of staticS3 initialized with joy.config and the chosen stage
     const s = require('./staticS3');
-    const statS3 = new s(this.config, options.stage)
+    const statS3 = new s(this.config, options.stage);
     await statS3.build();
 
     // Return an exit code
     return 0;
   }
 
-
-
+  // TODO: To be implemented
   swagger() { }
   docker() { }
 }

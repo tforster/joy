@@ -36,7 +36,5 @@
     "url": "https://github.com/tforster/joy/issues"
   },
   "homepage": "https://github.com/tforster/joy#readme",
-  "devDependencies": {
-    "eslint": "^6.1.0"
-  }
+  "devDependencies": {}
 }
