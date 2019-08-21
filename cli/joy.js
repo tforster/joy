@@ -77,11 +77,7 @@ class Joy {
    */
   invoke(cmd, params) {
     return new Promise((resolve, reject) => {
-      const child = require('child_process').spawn(cmd, params);
-
-      // Connect the child's std* to our std*
-      child.stdout.pipe(process.stdout);
-      child.stderr.pipe(process.stderr);
+      const child = require('child_process').spawn(cmd, params, { cwd: process.cwd(), stdio: 'inherit' });
 
       child.on('close', (code) => {
         resolve(code);
