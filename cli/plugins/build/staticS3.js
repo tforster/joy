@@ -14,6 +14,7 @@ const usemin = require('gulp-usemin');
 class StaticS3 {
   constructor(config, stage) {
     this.config = config;
+    config.src = './src';
     this.stage = stage;
     // Set build path
     switch (stage.toLowerCase()) {
@@ -42,20 +43,20 @@ class StaticS3 {
    * @returns
    * @memberof Tasks
    */
-  _compileViews() {
-    return new Promise((resolve, reject) => {
-      let pageData = {};
+  _compileViews(payload = {}) {
+    payload.renderer(ejs.__EJS__.renderFile);
 
+    return new Promise((resolve, reject) => {
       // See https://github.com/mde/ejs for options
       gulp
-        .src(`${this.config.src}/views/**/*.html`, pageData)
+        .src(`${this.config.src}/views/**/*.html`)
 
         .on('error', (e) => {
           console.error('e', e);
           reject(e);
         })
         .pipe(debug())
-        .pipe(ejs({}))
+        .pipe(ejs({ payload }))
 
         .pipe(rename({ extname: '.html' }))
         .pipe(gulp.dest(this.buildPath))
@@ -64,10 +65,10 @@ class StaticS3 {
     });
   }
 
-  async build() {
+  async build(payload) {
     await del([`${this.buildPath}**/*`]);
 
-    await this._compileViews().catch((e) => {
+    await this._compileViews(payload).catch((e) => {
       console.error('caught1', e);
     });
 
