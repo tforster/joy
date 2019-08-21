@@ -11,24 +11,20 @@ const path = require('path');
 const rename = require('gulp-rename');
 const rev = require('gulp-rev');
 const through = require('through2');
+const url = require('url');
 const usemin = require('gulp-usemin');
 
-class Static {
-  constructor(config, options) {
+class StaticGenerator {
+  constructor(config, options, renderModule) {
     this.config = config;
     config.src = './src';
     this.stage = options.stage;
+    this.renderModule = renderModule;
 
-    // Currently supporting just one engine. This section will need attention when adding a second.
-    if (options.engine === 'ejs') {
-      this.renderer = ejs.__EJS__.renderFile;
-    }
-    console.log(process.cwd());
     // Joy says data should be in _generator/data.json
-    this.payload = require(path.join(process.cwd(), config.src, '_generator/data.json'));
+    //    this.payload = require(path.join(process.cwd(), config.src, '_generator/data.json'));
     // Attach the renderer function
-    this.payload.renderer = this.renderer;
-    console.log('payload:', this.payload);
+    //  this.payload.renderer = this.renderer;
 
     // Set build path
     switch (this.stage.toLowerCase()) {
@@ -57,10 +53,12 @@ class Static {
    * @returns
    * @memberof Tasks
    */
-  _compileViews(payload = {}) {
+  _compileViews() {
+    const self = this;
     return new Promise((resolve, reject) => {
       // See https://github.com/mde/ejs for options
       // TODO: replace gulp external dependency with simple vinyl-fs function
+
       gulp
         .src(`${this.config.src}/_views/**/*.html`)
 
@@ -73,27 +71,34 @@ class Static {
 
         // Pipe stream to the various stages
         .pipe(debug())
-        .pipe(ejs({ payload }))
-        .pipe(rename({ extname: '.html' }))
+
+        // Pipe to ejs
+        // TODO: Replace ejs with call to this.renderModule.renderLib
+        .pipe(ejs({ d: this.renderModule }))
+
+        // Filter _private files out of the stream to dest
         .pipe(
-          through(function(chunk, enc, callback) {
-            console.log('chunk:', chunk);
-            this.push(chunk);
-            callback();
+          through.obj((file, enc, cb) => {
+            if (path.parse(file.path).name.indexOf('_') !== 0) {
+              cb(null, file);
+            } else {
+              cb();
+            }
           })
         )
-        .pipe(gulp.dest(this.buildPath));
+        .pipe(gulp.dest(path.join(`${this.config.projectRoot}`, this.buildPath)));
     });
   }
 
   /**
    * Compiles views and copies, including resources, to build path with optional concatenation and minification
-   * @param {*} payload
+   *
+   * @param {*} dev : If dev = true then don't minify/concatenate
    */
   async build(dev = true) {
     await del([`${this.buildPath}**/*`]);
 
-    await this._compileViews(this.payload).catch((e) => {
+    await this._compileViews().catch((e) => {
       console.error('caught1', e);
     });
 
@@ -125,6 +130,14 @@ class Static {
       {
         glob: [`${this.config.src}/img/src/*.svg`],
         dest: '/img/'
+      },
+      {
+        glob: [`${this.config.src}/service-worker.js`],
+        dest: '/'
+      },
+      {
+        glob: [`${this.config.src}/manifest.json`],
+        dest: '/'
       }
     ]).catch((e) => {
       console.error('caught', e);
@@ -259,4 +272,4 @@ class Static {
   }
 }
 
-module.exports = Static;
+module.exports = StaticGenerator;
