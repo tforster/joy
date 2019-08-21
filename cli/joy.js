@@ -106,7 +106,7 @@ class Joy {
   const code = await joy.prog.parse(process.argv);
 
   // Todo: Figure out why the debugger won't disconnect unless there's a synchronous action like a console.log()
-  console.log(code);
+  console.log('exit code:', code);
 
   // Exit with the success code so we can potentially include Joy inside a shell script if required
   process.exit(code);

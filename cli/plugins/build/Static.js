@@ -7,17 +7,31 @@ const ejs = require('gulp-ejs');
 const gulp = require('gulp');
 const htmlmin = require('gulp-htmlmin');
 const minifyCss = require('gulp-minify-css');
+const path = require('path');
 const rename = require('gulp-rename');
 const rev = require('gulp-rev');
+const through = require('through2');
 const usemin = require('gulp-usemin');
 
-class StaticS3 {
-  constructor(config, stage) {
+class Static {
+  constructor(config, options) {
     this.config = config;
     config.src = './src';
-    this.stage = stage;
+    this.stage = options.stage;
+
+    // Currently supporting just one engine. This section will need attention when adding a second.
+    if (options.engine === 'ejs') {
+      this.renderer = ejs.__EJS__.renderFile;
+    }
+    console.log(process.cwd());
+    // Joy says data should be in _generator/data.json
+    this.payload = require(path.join(process.cwd(), config.src, '_generator/data.json'));
+    // Attach the renderer function
+    this.payload.renderer = this.renderer;
+    console.log('payload:', this.payload);
+
     // Set build path
-    switch (stage.toLowerCase()) {
+    switch (this.stage.toLowerCase()) {
       case 'stage':
         this.buildPath = 'build/stage/';
         break;
@@ -34,7 +48,7 @@ class StaticS3 {
     // this.marked = marked;
     // this.marked.setOptions(this.config.marked);
     // this.slack = require('gulp-slack')(this.config.slack);
-    console.log(`Using target: ${stage} from ${this.config.src} to ${this.buildPath}`);
+    console.log(`Using target: ${this.stage} from ${this.config.src} to ${this.buildPath}`);
   }
 
   /**
@@ -44,31 +58,42 @@ class StaticS3 {
    * @memberof Tasks
    */
   _compileViews(payload = {}) {
-    payload.renderer(ejs.__EJS__.renderFile);
-
     return new Promise((resolve, reject) => {
       // See https://github.com/mde/ejs for options
+      // TODO: replace gulp external dependency with simple vinyl-fs function
       gulp
-        .src(`${this.config.src}/views/**/*.html`)
+        .src(`${this.config.src}/_views/**/*.html`)
 
+        // Setup error and end handlers
         .on('error', (e) => {
-          console.error('e', e);
+          console.error('_compileViews:', e);
           reject(e);
         })
+        .on('end', resolve)
+
+        // Pipe stream to the various stages
         .pipe(debug())
         .pipe(ejs({ payload }))
-
         .pipe(rename({ extname: '.html' }))
-        .pipe(gulp.dest(this.buildPath))
-
-        .on('end', resolve);
+        .pipe(
+          through(function(chunk, enc, callback) {
+            console.log('chunk:', chunk);
+            this.push(chunk);
+            callback();
+          })
+        )
+        .pipe(gulp.dest(this.buildPath));
     });
   }
 
-  async build(payload) {
+  /**
+   * Compiles views and copies, including resources, to build path with optional concatenation and minification
+   * @param {*} payload
+   */
+  async build(dev = true) {
     await del([`${this.buildPath}**/*`]);
 
-    await this._compileViews(payload).catch((e) => {
+    await this._compileViews(this.payload).catch((e) => {
       console.error('caught1', e);
     });
 
@@ -105,9 +130,10 @@ class StaticS3 {
       console.error('caught', e);
     });
 
-    if (this.stage !== 'dev') {
+    if (!dev) {
+      // Pass through the minification and concatenation stream
       await this._minh();
-      // Remove js and css folders that have now been concatenated to single files in the root
+      // Remove redundant files copied to the output
       await del([`${this.buildPath}/js`, `${this.buildPath}/css`]);
     }
   }
@@ -167,7 +193,7 @@ class StaticS3 {
   _minh() {
     const self = this;
     return new Promise((resolve, reject) => {
-      console.log(self.buildPath);
+      console.log('build path:', self.buildPath);
       gulp
         .src(`${self.buildPath}/**/*.html`)
         .pipe(debug())
@@ -233,4 +259,4 @@ class StaticS3 {
   }
 }
 
-module.exports = StaticS3;
+module.exports = Static;
