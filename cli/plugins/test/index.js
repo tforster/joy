@@ -1,5 +1,6 @@
 'use strict';
 const pa11y = require('pa11y');
+const { Analyzer } = require('hint');
 
 /**
  * Test implements Joy commands for running a11y and static code tests
@@ -46,6 +47,34 @@ class Test {
     // Output the raw result objects to stdout
     results.forEach((result) => {
       console.log(result);
+    });
+
+    return 0;
+  }
+
+  /**
+   * Wraps [webhint](https://webhint.io/) to provide extensive analysis of front-end code
+   *
+   * @param {*} options : Additional CLI flags
+   * @param {*} logger :  Logger
+   */
+  async staticWeb(options, logger) {
+    const config = {
+      connector: {
+        name: 'jsdom'
+      },
+      extends: ['web-recommended'],
+      formatters: ['stylish'],
+      parsers: ['css', 'html', 'javascript', 'manifest', 'package-json'],
+      browserslist: ['> 1%', 'last 2 versions']
+    };
+
+    const webhint = Analyzer.create(config);
+    const results = await webhint.analyze(options.urls[0]);
+
+    // TODO: Determine how we want to handle output (json to stdout? create excel file? display on screen? something else?)
+    results.forEach((result) => {
+      webhint.format(result.problems);
     });
 
     return 0;
