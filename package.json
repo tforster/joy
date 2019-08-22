@@ -31,7 +31,8 @@
     "hint": "^5.2.0",
     "pa11y": "^5.2.0",
     "semver": "^5.6.0",
-    "swagger-parser": "^6.0.5"
+    "swagger-parser": "^6.0.5",
+    "through2": "^3.0.1"
   },
   "author": "Troy Forster <troy.forster@gmail.com> (http://www.tforster.com)",
   "license": "MIT",

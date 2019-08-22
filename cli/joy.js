@@ -18,7 +18,7 @@ class Joy {
 
     // Fetch the config.json file (if this is a Joy project)
     this.config = this._config();
-
+    this.config.projectRoot = process.cwd();
     // Cache the environment variables (Follows this._config() since we may have just created some while parsing the config file)
     this.env = process.env;
   }
@@ -48,6 +48,7 @@ class Joy {
           process.env[p] = config.env[p];
         }
       }
+      config.projectRoot = process.cwd();
       return config;
     } catch (e) {
       return config;
@@ -60,7 +61,7 @@ class Joy {
    */
   isJoy() {
     try {
-      const stats = fs.statSync(path.join(process.cwd(), './.joy'));
+      const stats = fs.statSync(path.join(this.config.projectRoot, './.joy'));
       return stats && stats.isDirectory();
     } catch (e) {
       return false;
@@ -77,7 +78,7 @@ class Joy {
    */
   invoke(cmd, params) {
     return new Promise((resolve, reject) => {
-      const child = require('child_process').spawn(cmd, params, { cwd: process.cwd(), stdio: 'inherit' });
+      const child = require('child_process').spawn(cmd, params, { cwd: this.config.projectRoot, stdio: 'inherit' });
 
       child.on('close', (code) => {
         resolve(code);
@@ -102,7 +103,7 @@ class Joy {
   const code = await joy.prog.parse(process.argv);
 
   // Todo: Figure out why the debugger won't disconnect unless there's a synchronous action like a console.log()
-  console.log(code);
+  console.log('exit code:', code);
 
   // Exit with the success code so we can potentially include Joy inside a shell script if required
   process.exit(code);

@@ -14,12 +14,10 @@ class Test {
   constructor(joy) {
     const prog = joy.prog;
     prog
-      .command('test', 'Run various tests including a11y and static analysis')
-      .argument('<subcommand>', 'subcommand [a11y, staticServer, staticWeb]', ['a11y', 'staticServer', 'staticWeb'])
-      .option('-u, --urls <urls>', 'URLs to test', prog.LIST)
+      .command('analyze', 'Run various analysis including accessibility and static code')
+      .argument('<analysis-type>', 'Type of analysis to perform [a11y, static]', ['a11y', 'static'], 'static')
+      .option('-u, --urls <urls>', 'URLs to analyze', prog.LIST)
       .action(async (args, options, logger) => {
-        logger.debug('arguments: %j', args);
-        logger.debug('options: %j', options);
         const code = await this[args.subcommand].call(joy, options, logger);
         return code;
       });
