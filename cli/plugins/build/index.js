@@ -34,6 +34,7 @@ class Build {
   async static(options) {
     const RenderModule = require(path.join(this.config.projectRoot, './src/_generator/renderer.js'));
     const renderData = require(path.join(this.config.projectRoot, './src/_generator/data.json'));
+    renderData.stage = options.stage;
     const renderModule = new RenderModule(renderData);
 
     const StaticGenerator = require('./StaticGenerator');
