@@ -1,6 +1,6 @@
 {
   "name": "@tforster/joy",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "The Jake and trOY devopsy utility",
   "dependencies": {
     "@hint/configuration-all": "^1.0.1",
@@ -36,9 +36,6 @@
   },
   "author": "Troy Forster <troy.forster@gmail.com> (http://www.tforster.com)",
   "license": "MIT",
-  "bin": {
-    "joy": "./cli/joy.sh"
-  },
   "keywords": [
     "devops",
     "joy"

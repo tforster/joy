@@ -34,8 +34,16 @@ class Build {
   async static(options) {
     const RenderModule = require(path.join(this.config.projectRoot, './src/_generator/renderer.js'));
     const renderData = require(path.join(this.config.projectRoot, './src/_generator/data.json'));
+<<<<<<< HEAD
     const renderModule = new RenderModule(renderData);
 
+=======
+
+    // TODO: Improve the way .options are passed to render modules
+    renderData.stage = options.stage;
+    const renderModule = new RenderModule(renderData);
+
+>>>>>>> containers-poc
     const StaticGenerator = require('./StaticGenerator');
     const staticGenerator = new StaticGenerator(this.config, options, renderModule);
     await staticGenerator.build(options.stage === 'dev');

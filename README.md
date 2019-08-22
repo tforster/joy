@@ -1,4 +1,4 @@
-# joy v0.3.2
+# joy v0.3.3
 
 The Jake and trOY devops-y utility
 
@@ -44,13 +44,12 @@ SLACK_INCOMING_WEBHOOK_URL https://hooks.slack.com/services/T7KSWL4E9/BGL0HSVB2/
 
 ### Joy Commands
 
-Commands are grouped into five categories:
+Commands are grouped into nouns such as:
 
-* Docker
-* Navigation
-* Swagger
-* Utilities
-* Wordpress
+* build
+* test
+* push
+* etc
 
 ### Notes for .joy/config.env
 
@@ -92,6 +91,16 @@ Note that the example above sets `"useWSL": true`. This is necessary if running 
 tbd
 
 ## Change Log
+
+v0.3.3 **Another Refactor** (2019-08-22)
+
+* Switched to Caporal for managing CLI args
+* Moved away from .sh to .js (aka Shell to NodeJS)
+* Static site generator code is more robust
+
+Known Issues
+
+* Most commands, except `joy build static` are not working following the refactorig due to some pathing issues that will be resolved in the next release.
 
 v0.3.2 **A11Y** (2019-07-26)
 
