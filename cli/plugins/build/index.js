@@ -34,6 +34,8 @@ class Build {
   async static(options) {
     const RenderModule = require(path.join(this.config.projectRoot, './src/_generator/renderer.js'));
     const renderData = require(path.join(this.config.projectRoot, './src/_generator/data.json'));
+
+    // TODO: Improve the way .options are passed to render modules
     renderData.stage = options.stage;
     const renderModule = new RenderModule(renderData);
 
