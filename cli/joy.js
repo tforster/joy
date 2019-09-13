@@ -193,16 +193,16 @@ class Joy {
   /**
    * Executes the route indicated with all arguments
    *
-   * @param {*} args A combination of the commands and flags
+   * @param {object} options An object containing the route, parsed flags and route definition
    * @returns A Promise of the completion
    * @memberof Joy
    */
-  async _joyExec(args) {
-    if (args.def) {
-      return await args.def.fn.call(this, args);
+  async _joyExec(options) {
+    if (options.def) {
+      return await options.def.fn.call(this, options);
     } else {
-      console.log(`The command ${args} was not found.`);
-      return await this.stack.help.fn.call(this, args);
+      console.log(`The command ${options} was not found.`);
+      return await this.stack.help.fn.call(this, options);
     }
   }
 }

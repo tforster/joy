@@ -3,13 +3,11 @@
 // Node system dependencies
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
 
 // StaticGenerator dependencies
 const babili = require('gulp-babili');
 const debug = require('gulp-debug');
 const del = require('del');
-const ejs = require('gulp-ejs');
 const gulp = require('gulp');
 const htmlmin = require('gulp-htmlmin');
 const minifyCss = require('gulp-minify-css');
@@ -18,7 +16,20 @@ const rev = require('gulp-rev');
 const through = require('through2');
 const usemin = require('gulp-usemin');
 
+
+/**
+ * Mostly template-agnostic static site generator 
+ * @class StaticGenerator
+ */
 class StaticGenerator {
+
+
+  /**
+   * Creates an instance of StaticGenerator.
+   * @param {class} joy An instance of the Joy framework
+   * @param {object} args
+   * @memberof StaticGenerator
+   */
   constructor(joy, args) {
     this.args = args;
     this.joy = joy;
@@ -27,15 +38,11 @@ class StaticGenerator {
     this.config = joy.config;
     this.stage = args.flags.stage.value;
 
+    // ! HACK: Had to tack stage on to renderData to get Jake's to work. Needs elegance++
     const renderData = require(path.join(this.joy.config.projectRoot, './src/_generator/data.json'));
+    renderData.stage = this.stage;
 
     this.renderModule = new (require(path.join(this.joy.config.projectRoot, './src/_generator/renderer.js')))(renderData);
-
-
-    // Joy says data should be in _generator/data.json
-    //    this.payload = require(path.join(process.cwd(), config.src, '_generator/data.json'));
-    // Attach the renderer function
-    //  this.payload.renderer = this.renderer;
 
     // Set build path
     switch (this.stage.toLowerCase()) {
@@ -51,48 +58,47 @@ class StaticGenerator {
     }
 
     this.buildPath = path.join(this.joy.config.projectRoot, this.buildPath);
+
+    // TODO: Re-implement support for markdown-to-HTML
     // this.config = {
     // }
     // this.marked = marked;
     // this.marked.setOptions(this.config.marked);
+
+    // TODO: Re-implement support for calling Slack webhook notifications
     // this.slack = require('gulp-slack')(this.config.slack);
+
+    // TODO: Implement a -v, --verbose flag for output like the following
     console.log(`Using target: ${this.stage} from ${this.config.src} to ${this.buildPath}`);
   }
 
   /**
    * Constructs .html views from .ejs templates in src/views
-   *
    * @returns
    * @memberof Tasks
    */
   async _compileViews() {
-    //return new Promise((resolve, reject) => {
     // See https://github.com/mde/ejs for options
     // TODO: replace gulp external dependency with simple vinyl-fs function
+
+    const dest = path.join(this.buildPath);
+
 
     gulp
       .src(`${this.config.src}/_views/**/*.html`)
 
-      // Setup error and end handlers
+      // Setup error handler
       .on('error', (e) => {
         console.error('_compileViews:', e);
-        //    reject(e);
-      })
-
-      .on('end', () => {
-        console.log('end')
-        //          resolve()
       })
 
       // Pipe stream to the various stages
       .pipe(debug())
 
-      // Pipe to ejs
-      // TODO: Replace ejs with call to this.renderModule.renderLib
-      //.pipe(ejs({ d: this.renderModule }))
-      .pipe({ d: this.renderModule.renderFunction })
+      // TODO: Must be renderer agnostic. RenderModule to export generic render function so we don't have this.renderModule.ejs
+      .pipe(this.renderModule.ejs({ d: this.renderModule }))
 
-      // // Filter _private files out of the stream to dest
+      // Remove folders and files starting with _ from the stream
       .pipe(
         through.obj((file, enc, cb) => {
           if (path.parse(file.path).name.indexOf('_') !== 0) {
@@ -102,9 +108,11 @@ class StaticGenerator {
           }
         })
       )
-      .pipe(gulp.dest(path.join(`${this.config.projectRoot}`, this.buildPath)));
-    //});
+
+      // Save to the build path
+      .pipe(gulp.dest(dest));
   }
+
 
   /**
    * Compiles views and copies, including resources, to build path with optional concatenation and minification
@@ -112,14 +120,14 @@ class StaticGenerator {
    * @param {*} dev : If dev = true then don't minify/concatenate
    */
   async build(dev = true) {
-    // Prepare the build destination for a fresh build
+    // Prepare the build destination for a fresh build 
+    // ! NOTE: rmdirSync recursive requires node 12.10.0 minimum
     fs.rmdirSync(this.buildPath, { recursive: true });
     fs.mkdirSync(this.buildPath);
 
-    // Compile the views including 
+    // Compile the views
     const r = await this._compileViews();
 
-    console.log(r);
     await this._copyResources([
       {
         glob: [`${this.config.src}/favicon.ico`],
@@ -163,9 +171,11 @@ class StaticGenerator {
 
     if (!dev) {
       // Pass through the minification and concatenation stream
-      //await this._minh();
+      await this._minh().catch((reason) => {
+        throw reason;
+      })
       // Remove redundant files copied to the output
-      //await del([`${this.buildPath}/js`, `${this.buildPath}/css`]);
+      await del([`${this.buildPath}/js`, `${this.buildPath}/css`]);
     }
   }
 
@@ -208,12 +218,15 @@ class StaticGenerator {
                 }
               })
             )
-            .pipe(gulp.dest(this.buildPath + resource.dest))
+            .pipe(gulp.dest(path.join(this.buildPath, resource.dest)))
             .on('end', resolve);
         });
       })
     );
   }
+
+
+  // TODO: Figure out why this code throws a PluginError
 
   /**
    * Minifies and concatenates globbed .HTML files including nested Javascript and CSS resources
@@ -222,13 +235,17 @@ class StaticGenerator {
    * @memberof Tasks
    */
   _minh() {
-    const self = this;
+    const src = this.buildPath + '**/*.html';
+    const dest = this.buildPath;
+
     return new Promise((resolve, reject) => {
-      console.log('build path:', self.buildPath);
       gulp
-        .src(`${self.buildPath}/**/*.html`)
+        .src(src)
         .pipe(debug())
-        .on('error', reject)
+        .on('error', (err) => {
+          console.error('_minh', err);
+          return reject();
+        })
         .pipe(
           usemin({
             css: [
@@ -263,11 +280,15 @@ class StaticGenerator {
                 }
               })
             ],
-            inlinecss: [minifyCss(), 'concat']
+            inlinecss: [minifyCss(), 'concat'],
+            skipMissingResources: true
           })
         )
-        .pipe(gulp.dest(self.buildPath))
-        .on('end', resolve);
+        .pipe(gulp.dest(dest))
+
+        .on('end', () => {
+          return resolve();
+        });
     });
   }
 
