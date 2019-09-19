@@ -164,6 +164,10 @@ class StaticGenerator {
       {
         glob: [`${this.config.src}/manifest.json`],
         dest: '/'
+      },
+      {
+        glob: [`${this.config.src}/vendor/**/*.*`],
+        dest: '/vendor/'
       }
     ]).catch((e) => {
       console.error('caught', e);
