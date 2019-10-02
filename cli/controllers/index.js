@@ -89,6 +89,55 @@ class Controllers {
     }
     console.log('not yet implemented');
   }
+
+
+
+  /**
+   *
+   * Creates and starts a new Joy private Docker registry container. If the container already exists and is stopped, it is restarted.
+   * @param {object} options An object containing the route, parsed flags and route definition
+   * @returns An exit code as an integer
+   * @memberof Controllers
+   */
+  async startDockerRegistry(options) {
+    // TODO: Add support to invoke for spawn AND exec. Exec will allow us to $(docker ps -a | grep registry.joy) to check if container is already running
+
+    let retVal = await this.invoke('docker', [
+      'run', '-d',
+      '-p', '5000:5000',
+      '--name', 'registry.joy',
+      '-e', 'REGISTRY_STORAGE=s3',
+      '-e', 'REGISTRY_STORAGE_S3_REGION=ca-central-1',
+      '-e', 'REGISTRY_STORAGE_S3_BUCKET=registry.joy',
+      '-e', `REGISTRY_STORAGE_S3_ACCESSKEY=${this.config.awsProfiles.kitchenaid.aws_access_key_id}`,
+      '-e', `REGISTRY_STORAGE_S3_SECRETKEY=${this.config.awsProfiles.kitchenaid.aws_secret_access_key}`,
+      'registry:2'
+    ]);
+
+    if (retVal !== 0) {
+      console.log('Ignore the previous message, spawning now (this to be cleaned up in a future release).')
+
+      retVal = await this.invoke('docker', [
+        'start', 'registry.joy'
+      ])
+    }
+
+    return retVal;
+  }
+
+  /**
+   *
+   * Stops the Joy private Docker registry if it is running
+   * @param {object} options An object containing the route, parsed flags and route definition
+   * @returns An exit code as an integer
+   * @memberof Controllers
+   */
+  async stopDockerRegistry(options) {
+    return await this.invoke('docker', [
+      'stop', 'registry.joy'
+    ]);
+  }
+
 }
 
 const controllers = new Controllers();
@@ -99,3 +148,5 @@ module.exports.build = controllers.build;
 module.exports.buildStatic = controllers.buildStatic;
 module.exports.buildSwagger = controllers.buildSwagger;
 module.exports.buildDocker = controllers.buildDocker;
+module.exports.startDockerRegistry = controllers.startDockerRegistry;
+module.exports.stopDockerRegistry = controllers.stopDockerRegistry;

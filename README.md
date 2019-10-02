@@ -2,11 +2,25 @@
 
 The Jake and trOY devops-y utility
 
+- [joy v0.3.3](#joy-v033)
+
+  - [Installation](#installation)
+  - [Built With](#built-with)
+  - [Tips and Tricks](#tips-and-tricks)
+    - [Required Runtime Dependencies](#required-runtime-dependencies)
+    - [Required Development Dependencies](#required-development-dependencies)
+    - [Configure a new Joy project](#configure-a-new-joy-project)
+    - [Current Joy Commands](#current-joy-commands)
+    - [Notes for .joy/config.json](#notes-for-joyconfigjson)
+    - [Debugging from Visual Studio Code](#debugging-from-visual-studio-code)
+  - [Change Log](#change-log)
+
 ## Installation
 
 1. Git clone the project
 2. Checkout master
 3. Create an alias in bash to cli/joy.js
+4. Add a new AWS profile for [registry.joy] in ~/.aws/credentials. See @troy for values until we have a shared secrets process.
 
 ## Built With
 
@@ -41,7 +55,6 @@ The following is a list of the technologies used to develop and manage this proj
 - Git
 - A code editor
 
-
 ### Configure a new Joy project
 
 Instructions here to explain how to use `joy init` and what to change in the config.env file.
@@ -53,9 +66,14 @@ SWAGGER_FILE_URI=http://localhost:10010/swagger
 SLACK_INCOMING_WEBHOOK_URL https://hooks.slack.com/services/T7KSWL4E9/BGL0HSVB2/************************
 ```
 
-### Joy Commands
+### Current Joy Commands
 
-Coming soon...
+| Joy   | Subcommand | Subcommand | Subcommand | Description                                                                                                                                             | Flags            |
+| ----- | ---------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| start | docker     | registry   |            | Starts the private Docker registry on http://localhost:5000. This command requires a properly configured AWS credentials profile called [registry.joy]. |                  |
+| stop  | docker     | registry   |            | Stops the private Docker registry                                                                                                                       |                  |
+| build |            |            |            |                                                                                                                                                         |                  |
+| build | static     |            |            | Compiles the static site into build/dev, build/stage or build/prod depending upon the stage flag                                                        | -s --stage stage |
 
 ### Notes for .joy/config.json
 
@@ -65,7 +83,7 @@ Coming soon...
 
 Create an appropriate configuration in ./vscode/launch.json
 
-``` javascript
+```javascript
 {
   "version": "0.2.0",
   "configurations": [{
@@ -85,6 +103,14 @@ Create an appropriate configuration in ./vscode/launch.json
 ```
 
 ## Change Log
+
+v1.1.0 **Joy Private Docker Registry** (2019-10-02)
+
+Added support for an S3 backed private Docker registry
+
+- Note that since Joy defines that we store per-client AWS credentials in ~/.aws/credentials, this tool is now accesses and reads that file. There is no writing at this time and read credentials are stored in memory only.
+- This release also sees some cleanup of joy.js where routes have now been moved out to a separate routes/index.js file.
+- Also added a new commands summary table in the section above. Updates to this table should be synchronized with future feature releases and the changelog for enhanced communication of changes.
 
 v1.0.0 **Breaking Refactor** (2019-09-13)
 

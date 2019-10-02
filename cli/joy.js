@@ -6,9 +6,11 @@
 const fs = require('fs');
 const path = require('path');
 
-// Joy project dependencies
-const controllers = require('./controllers');
+// 3rd Party dependencies
+const ini = require('ini'); // Required to read and parse ~/.aws/credentials
 
+// Joy project dependencies
+const routes = require('./routes');
 
 /**
  * The "App" class
@@ -30,6 +32,7 @@ class Joy {
   constructor() {
     // Fetch the config.json file (if this is a Joy project)
     this.config = this._getConfigJson();
+    this.config.awsProfiles = this._getAwsProfiles();
     this.config.projectRoot = process.cwd();
     this.config.isJoy = this.isJoy();
 
@@ -120,10 +123,26 @@ class Joy {
         resolve(code);
       });
 
+      child.on('exit', (code, signal) => {
+      });
+
       child.on('error', (err) => {
+        console.log('child error', err)
         reject(err);
       });
     });
+  }
+
+
+  /**
+   * Reads the local ~/.aws/credentials file and adds found profiles to joy.config.awsProfiles
+   *
+   * @returns An object hash of profiles with access key ids and secrets
+   * @memberof Joy
+   */
+  _getAwsProfiles() {
+    const awsCredentials = ini.parse(fs.readFileSync(path.join(process.env['HOME'], '.aws/credentials'), 'utf-8'));
+    return awsCredentials;
   }
 
 
@@ -199,7 +218,9 @@ class Joy {
    */
   async _joyExec(options) {
     if (options.def) {
-      return await options.def.fn.call(this, options);
+      return await options.def.fn.call(this, options).catch(reason => {
+        throw reason;
+      })
     } else {
       console.log(`The command ${options} was not found.`);
       return await this.stack.help.fn.call(this, options);
@@ -212,44 +233,17 @@ class Joy {
   // Initialize an instance of Joy
   const joy = new Joy();
 
-  // Add all possible command routes, flags, methods, etc to the commands stack
-  joy.use('help',
-    [], controllers.help);
-
-  joy.use('build',
-    [], controllers.build);
-
-  joy.use('build/static',
-    [{
-      name: 'stage',
-      flag: { short: '-s', long: '--stage' },
-      help: 'The stage to build for (e.g. dev, stage, prod)'
-    },
-    {
-      name: 'watch',
-      flag: { short: '-w', long: '--watch' },
-      help: 'Watch for changes in /src folder'
-    }], controllers.buildStatic);
-
-  joy.use('build/swagger',
-    [{
-      name: 'watch',
-      flag: { short: '-w', long: '--watch' },
-      help: 'Watch for changes in swagger folder'
-    }], controllers.buildSwagger);
-
-  joy.use('build/docker',
-    [{
-      name: 'name',
-      flag: { short: '-n', long: '--name' },
-      help: 'Docker file prefix (e.g. www, db, etc.'
-    }], controllers.buildDocker);
+  // Add routes from the routes folder/file
+  routes(joy);
 
   // Extract the commands and flags just entered by the user into a manageable object
   const parsedArgs = joy._parseCommandLineArgs(process.argv.slice(1));
 
   // (Attempt to) execute the specified commands and arguments, returning an exit code
-  const exitCode = await joy._joyExec(parsedArgs);
+  const exitCode = await joy._joyExec(parsedArgs).catch(reason => {
+    console.log('reason', reason);
+    throw reason;
+  })
 
   // Exit Joy with an OS exit code that can be used in the shell and shell scripts
   console.log(`exiting with ${exitCode}`);
