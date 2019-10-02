@@ -109,8 +109,8 @@ class Controllers {
       '-e', 'REGISTRY_STORAGE=s3',
       '-e', 'REGISTRY_STORAGE_S3_REGION=ca-central-1',
       '-e', 'REGISTRY_STORAGE_S3_BUCKET=registry.joy',
-      '-e', `REGISTRY_STORAGE_S3_ACCESSKEY=${this.config.awsProfiles.kitchenaid.aws_access_key_id}`,
-      '-e', `REGISTRY_STORAGE_S3_SECRETKEY=${this.config.awsProfiles.kitchenaid.aws_secret_access_key}`,
+      '-e', `REGISTRY_STORAGE_S3_ACCESSKEY=${this.config.awsProfiles.registry.joy.aws_access_key_id}`,
+      '-e', `REGISTRY_STORAGE_S3_SECRETKEY=${this.config.awsProfiles.registry.joy.aws_secret_access_key}`,
       'registry:2'
     ]);
 
