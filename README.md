@@ -1,9 +1,8 @@
-# joy v0.3.3
+# Joy CLI
 
 The Jake and trOY devops-y utility
 
-- [joy v0.3.3](#joy-v033)
-
+- [Joy CLI](#joy-cli)
   - [Installation](#installation)
   - [Built With](#built-with)
   - [Tips and Tricks](#tips-and-tricks)
