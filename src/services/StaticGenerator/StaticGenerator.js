@@ -27,16 +27,14 @@ class StaticGenerator {
   /**
    * Creates an instance of StaticGenerator.
    * @param {class} joy An instance of the Joy framework
-   * @param {object} args
    * @memberof StaticGenerator
    */
-  constructor(joy, args) {
-    this.args = args;
+  constructor(joy) {
     this.joy = joy;
     this.joy.config.src = path.join(this.joy.config.projectRoot, './src');
-    this.joy.config.stage = args.flags.stage;
+    this.joy.config.stage = joy.handler.params.stage;
     this.config = joy.config;
-    this.stage = args.flags.stage.value;
+    this.stage = joy.handler.params.stage;
 
     // ! HACK: Had to tack stage on to renderData to get Jake's to work. Needs elegance++
     const renderData = require(path.join(this.joy.config.projectRoot, './src/_generator/data.json'));

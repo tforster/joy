@@ -1,5 +1,9 @@
 'use strict';
 
+// Third party dependencies (Typically found in public NPM packages)
+const slugify = require('slugify');
+
+// Project code dependencies (Code modules defined in this project)
 const Docker = require('../services/Docker');
 const S3 = require('../services/S3');
 const StaticGenerator = require('../services/StaticGenerator');
@@ -45,7 +49,7 @@ class Controllers {
    * @returns An exit code as an integer
    * @memberof Controllers
    */
-  async buildStatic(options) {
+  async buildStatic() {
     if (!this.config.isJoy) {
       // TODO: Refactor this and it's repeats as a property in the joy.use() clause so we can shortcut hitting the controller
       console.error('This command can only be executed in a Joy project');
@@ -53,8 +57,8 @@ class Controllers {
     }
 
     // TODO: Cleanup services, folders, index.js files and requires so we don't get service.service as in below
-    const staticGenerator = new StaticGenerator.StaticGenerator(this, options);
-    await staticGenerator.build(options.flags.stage === 'dev');
+    const staticGenerator = new StaticGenerator.StaticGenerator(this);
+    await staticGenerator.build(this.handler.params.stage === 'dev');
 
     // Return an exit code
     return await 0;
@@ -91,39 +95,36 @@ class Controllers {
   }
 
 
-
   /**
    *
    * Creates and starts a new Joy private Docker registry container. If the container already exists and is stopped, it is restarted.
    * @param {object} options An object containing the route, parsed flags and route definition
    * @returns An exit code as an integer
    * @memberof Controllers
+   * 
    */
-  async startDockerRegistry(options) {
-    // TODO: Add support to invoke for spawn AND exec. Exec will allow us to $(docker ps -a | grep registry.joy) to check if container is already running
-
-    let retVal = await this.invoke('docker', [
-      'run', '-d',
-      '-p', '5000:5000',
-      '--name', 'registry.joy',
-      '-e', 'REGISTRY_STORAGE=s3',
-      '-e', 'REGISTRY_STORAGE_S3_REGION=ca-central-1',
-      '-e', 'REGISTRY_STORAGE_S3_BUCKET=registry.joy',
-      '-e', `REGISTRY_STORAGE_S3_ACCESSKEY=${this.config.awsProfiles.registry.joy.aws_access_key_id}`,
-      '-e', `REGISTRY_STORAGE_S3_SECRETKEY=${this.config.awsProfiles.registry.joy.aws_secret_access_key}`,
-      'registry:2'
-    ]);
-
-    if (retVal !== 0) {
-      console.log('Ignore the previous message, spawning now (this to be cleaned up in a future release).')
-
-      retVal = await this.invoke('docker', [
-        'start', 'registry.joy'
-      ])
+  async startDockerRegistry() {
+    // Check to see if the registry.joy container exists
+    let result = await this.invoke(['docker', 'ps -a | grep registry.joy'], true, { stdio: 'pipe' });
+    if (result.code !== 0) {
+      // Container does not exist. Create it and start it.
+      result = await this.invoke(['docker',
+        `run -d -p 5000:5000 --name registry.joy\
+         -e REGISTRY_STORAGE=s3\
+         -e REGISTRY_STORAGE_S3_REGION=ca-central-1\
+         -e REGISTRY_STORAGE_S3_BUCKET=registry.joy\
+         -e REGISTRY_STORAGE_S3_ACCESSKEY=${this.config.awsProfiles.registry.joy.aws_access_key_id}\
+         -e REGISTRY_STORAGE_S3_SECRETKEY=${this.config.awsProfiles.registry.joy.aws_secret_access_key}\
+         registry:2`
+      ], false, { stdio: 'ignore' });
+    } else {
+      // Container exists. Start it.
+      result = await this.invoke(['docker', 'start registry.joy'], false, { stdio: 'ignore' });
     }
 
-    return retVal;
+    return result;
   }
+
 
   /**
    *
@@ -133,9 +134,12 @@ class Controllers {
    * @memberof Controllers
    */
   async stopDockerRegistry(options) {
-    return await this.invoke('docker', [
-      'stop', 'registry.joy'
-    ]);
+    return await this.invoke(['docker', 'stop registry.joy'], false);
+  }
+
+  async gitCheckoutB() {
+    let branchName = `${(`0000${this.handler.params.number}`).slice(-4)}-${slugify(this.handler.params.title, { lower: true })}`;
+    return await this.invoke(['git', `checkout -b ${branchName}`], false, { stdio: 'ignore' });
   }
 
 }
@@ -150,3 +154,4 @@ module.exports.buildSwagger = controllers.buildSwagger;
 module.exports.buildDocker = controllers.buildDocker;
 module.exports.startDockerRegistry = controllers.startDockerRegistry;
 module.exports.stopDockerRegistry = controllers.stopDockerRegistry;
+module.exports.gitCheckoutB = controllers.gitCheckoutB;
