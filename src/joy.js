@@ -37,6 +37,7 @@ class Joy {
     this.config.awsProfiles = this._getAwsProfiles();
     this.config.projectRoot = process.cwd();
     this.config.isJoy = this.isJoy();
+    this.config.joyRoot = __dirname;
 
     // Cache the environment variables (Follows this._config() since we may have just created some while parsing the config file)
     this.env = process.env;

@@ -21,5 +21,8 @@ module.exports = function (joy) {
 
   // Git commands
   joy.use('git/branch/:number/:title', controllers.gitCheckoutB);
+
+  // Product commands
+  joy.use('product/new/:agent/:client/:brand/:project/:product', controllers.productNew);
 }
 

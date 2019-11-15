@@ -1,13 +1,14 @@
 'use strict';
 
+// System dependencies (Built in modules)
+const fs = require('fs').promises;
+const path = require('path');
+
 // Third party dependencies (Typically found in public NPM packages)
 const slugify = require('slugify');
 
 // Project code dependencies (Code modules defined in this project)
-const Docker = require('../services/Docker');
-const S3 = require('../services/S3');
 const StaticGenerator = require('../services/StaticGenerator');
-const Swagger = require('../services/Swagger');
 
 
 /**
@@ -142,6 +143,52 @@ class Controllers {
     return await this.invoke(['git', `checkout -b ${branchName}`], false, { stdio: 'ignore' });
   }
 
+
+  /**
+   * Create a new empty Joy project in the current folder. The current folder must be empty or an error is thrown.
+   * Example: joy product new agency client brand project product
+   * Note: Current args are not used yet. Intent is to build new product project outside of current directory
+   *   by parsing args to create fully qualified filesystem path on the fly. Also use args to edit the 
+   *   package.json and README.md files.
+   *
+   * @memberof Controllers
+   */
+  async productNew() {
+    const root = this.config.projectRoot;
+    const joyRoot = this.config.joyRoot;
+    const src = path.join(root, 'src');
+
+    // Check the specified project root is a directory
+    if (!(await fs.stat(root)).isDirectory()) {
+      let err = new Error('ENOTDIR')
+      err.code = 'ENOTDIR';
+      throw err;
+    }
+
+    // Check that the specified project root is empty
+    if ((await fs.readdir(root)).length !== 0) {
+      let err = new Error('ENOTEMPTY')
+      err.code = "ENOTEMPTY";
+      throw err;
+    }
+
+    // Create empty required directories
+    await fs.mkdir('.joy/docker', { recursive: true });
+    await fs.mkdir(src);
+
+    // Copy required files from Joy src/templates/product-new to the new src subdirectory
+    const files = await (fs.readdir(path.join(joyRoot, 'templates/product-new')));
+    files.forEach(async (file) => {
+      await fs.copyFile(path.join(joyRoot, 'templates/product-new', file), path.join(root, file));
+    });
+
+    // Create .git (via `git init`)
+    await this.invoke(['git', 'init'], false, { stdio: 'ignore' });
+
+    // Create package.json (via npm init)
+    await this.invoke(['npm', 'init'], false, { stdio: 'inherit' });
+  }
+
 }
 
 const controllers = new Controllers();
@@ -155,3 +202,4 @@ module.exports.buildDocker = controllers.buildDocker;
 module.exports.startDockerRegistry = controllers.startDockerRegistry;
 module.exports.stopDockerRegistry = controllers.stopDockerRegistry;
 module.exports.gitCheckoutB = controllers.gitCheckoutB;
+module.exports.productNew = controllers.productNew;
