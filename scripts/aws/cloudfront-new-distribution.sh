@@ -6,7 +6,7 @@
 # - Uses DNS (in Route53) for domain validation
 # - Thanks to https://gist.github.com/andrewodri/1d3c25b01f2b7b307f4b7b538ef36fff
 #
-# @usage ./aws-cloudfront-new-distribution {bucket} {region} {profile}
+# @usage ./cloudfront-new-distribution {bucket} {region} {profile}
 # 
 # @param {string} s3Bucket as $1: The S3 bucket name (conventionally the domain name)
 # @param {string} region as $2:   The AWS region

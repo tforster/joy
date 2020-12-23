@@ -6,7 +6,7 @@
 # - Uses DNS (in Route53) for domain validation
 # - Thanks to https://gist.github.com/andrewodri/1d3c25b01f2b7b307f4b7b538ef36fff
 #
-# @usage ./aws-certificate-manager-new-cert.sh {domain} {profile}
+# @usage ./certificate-manager-new-cert.sh {domain} {profile}
 # 
 # @param {string} domain name as $1:  The domain to request the certificate for
 # @param {string} profile as $2:      The ~/.aws/credentials profile name to use
