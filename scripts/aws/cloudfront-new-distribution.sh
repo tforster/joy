@@ -1,23 +1,33 @@
 #!/bin/sh
 
 ###################################################################################################################################
-# Requests a new AWS certifcate for the specified domain
-# - Automatically includes a wildcard for subdomains to make it easy to serve resources such as www., api., etc
-# - Uses DNS (in Route53) for domain validation
-# - Thanks to https://gist.github.com/andrewodri/1d3c25b01f2b7b307f4b7b538ef36fff
+# Creates a new CloudFront distribution fronting an S3 web bucket. 
 #
-# @usage ./cloudfront-new-distribution {bucket} {region} {profile}
+# - Creates custom domain (CNAME) references
+# - Binds to the provided ACM certificate
+#
+# @usage ./cloudfront-new-distribution \
+#          {s3-bucket-name} \
+#          {s3-region} \
+##         {alias1} \
+#          {alias2} \
+#          {certificate-arn} \
+#          {aws-profile}
 # 
-# @param {string} s3Bucket as $1: The S3 bucket name (conventionally the domain name)
-# @param {string} region as $2:   The AWS region
-# @param {string} profile as $3:  The ~/.aws/credentials profile name to use
+# @param {string} s3-bucket-name as $1: The origin S3 bucket name 
+# @param {string} s3-region as $2:      The orign S3 bucket region
+# @param {string} alias1 as $3:         The first alias, e.g. www.mydomain.com
+# @param {string} alias2 as $4:         The second alias, e.g. mydomain.com
+# @param {string} certificate-arn:      The arn for a previously created certificate (./certificate-manager-new-cert.sh)
+# @param {string} profile as $3:        The ~/.aws/credentials profile name to use
+#
 ###################################################################################################################################
 
 # Turn off the default pager which causes the script to pause after each command
 export AWS_PAGER=""
 
 # Set the AWS profile as an environment variable so we don't have to specify --profile multiple times
-export AWS_PROFILE=$3
+export AWS_PROFILE=$6
 
 # Create a unique value for the caller reference
 CALLER_REFERENCE=$(date +%s)
@@ -25,16 +35,23 @@ CALLER_REFERENCE=$(date +%s)
 # Name incoming arguments for improved legibility
 BUCKET=$1
 REGION=$2
+ALIAS_1=$3
+ALIAS_2=$4
+CERTIFICATE_ARN=$5
 
 # Construct the S3 origin domain name
-DOMAIN_NAME=${BUCKET}.s3-website-${REGION}.amazonaws.com
+DOMAIN_NAME=${BUCKET}.s3-website.${REGION}.amazonaws.com
 
 # Create the temporary cloudfront-distribution.json file 
 cat > /tmp/cloudfront-distribution.json <<EOF
 {
   "CallerReference": "${CALLER_REFERENCE}",
   "Aliases": {
-    "Quantity": 0
+    "Quantity": 2,
+    "Items": [
+      "$ALIAS_1",
+      "$ALIAS_2"
+    ]
   },
   "DefaultRootObject": "index",
   "Origins": {
@@ -127,9 +144,11 @@ cat > /tmp/cloudfront-distribution.json <<EOF
   "PriceClass": "PriceClass_100",
   "Enabled": true,
   "ViewerCertificate": {
-    "CloudFrontDefaultCertificate": true,
-    "MinimumProtocolVersion": "TLSv1",
-    "CertificateSource": "cloudfront"
+    "ACMCertificateArn": "${CERTIFICATE_ARN}",
+    "SSLSupportMethod": "sni-only",
+    "MinimumProtocolVersion": "TLSv1.2_2018",
+    "Certificate": "${CERTIFICATE_ARN}",
+    "CertificateSource": "acm"
   },
   "Restrictions": {
     "GeoRestriction": {
@@ -145,10 +164,8 @@ EOF
 
 # Create the CloudFront distribution
 CF_DISTRIBUTION=$(aws cloudfront create-distribution \
-  --distribution-config file:///tmp/cloudfront-distribution.json
-)
-
-echo "[CF]             Distribution: $CF_DISTRIBUTION"
+  --distribution-config file:///tmp/cloudfront-distribution.json)
+echo "CloudFront distribution: "$CF_DISTRIBUTION
 
 # Cleanup the temporary file
 rm /tmp/cloudfront-distribution.json

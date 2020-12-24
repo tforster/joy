@@ -3,7 +3,9 @@
 ###################################################################################################################################
 # Creates a new S3 bucket configured as a website using extensionless defaults of index and error
 #
-# @usage ./s3-new-web {bucket} {region} {profile}
+# TODO: Add CORS policy 
+#
+# @usage ./s3-new-web.sh {bucket} {region} {profile}
 #
 # @param {string} bucket as $1:   The unique bucket name
 # @param {string} region as $2:   The region to create the bucket in
@@ -16,30 +18,36 @@ export AWS_PAGER=""
 # Set the AWS profile as an environment variable so we don't have to specify --profile multiple times
 export AWS_PROFILE=$3
 
-# Create the temporary bucket policy json file 
-cat > /tmp/bucket-policy.json <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "PublicReadGetObject",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::'$1'/*"
-    }
-  ]
-}
-EOF
-
-# Create the bucket named $1 in the region $2 using profile $3
+# Create the bucket named $1 in the region $2
 aws s3api create-bucket --bucket $1 --region $2  --create-bucket-configuration LocationConstraint=$2
-
-# Set the bucket policy created above
-aws s3api put-bucket-policy --bucket $1 --policy file:///tmp/bucket-policy.json
 
 # Configure the bucket as a website using index and error as the two default fuiles
 aws s3 website s3://$1/ --index-document index --error-document error
 
-# Cleanup the temporary file
-rm /tmp/bucket-policy.json
+# Add simple placeholder files
+cat <<EOF | aws s3 cp - s3://$1/index --content-type "text/html" --acl public-read
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Index</title>
+</head>
+<body>
+  <h1>Index</h1>
+</body>
+</html>
+EOF
+
+cat <<EOF | aws s3 cp - s3://$1/error --content-type "text/html" --acl public-read
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error</title>
+</head>
+<body>
+  <h1>Error</h1>
+</body>
+</html>
+EOF
+
