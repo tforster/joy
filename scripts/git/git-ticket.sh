@@ -67,9 +67,8 @@ SLUGIFIED=$(echo "$TITLE" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/-/
 # Assemble the branch name
 BRANCH_NAME=$TYPE/$TICKET_NUMBER_PADDED-$SLUGIFIED
 
-# TODO Check to see if the branch exists
-# TODO Create the branch. Default to branching off develop for now. Consider adding an optional flag to specify a different branch.
-# TODO Checkout the branch
+# Create and checkout the branch simultaneously
+git checkout -b $BRANCH_NAME develop
 
 # Echo out a bunch of debug crap for now
 echo "REMOTE                 $REMOTE"
