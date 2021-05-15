@@ -34,7 +34,6 @@ REPO=$(cut -d ":" -f2 <<< $REMOTE)
 
 # Get the title and type based on the provider
 case $PROVIDER in
-
   git@github.com)
     # Get the ticket info from the GitHub issue
     TICKET_INFO=$(gh issue view $TICKET_NUMBER --json title,labels)
@@ -42,7 +41,6 @@ case $PROVIDER in
     TITLE=$(echo $TICKET_INFO | jq -r '.title') 
     TYPE=$(echo $TICKET_INFO | jq -r '.labels[0].name' )
     ;;
-
   git@ssh.dev.azure.com)
     # Get the organization name as the second path segment of the repo in the form v3/{organization}/{project}/{repository}
     ORGANIZATION=$(cut -d "/" -f2 <<< $REPO)
@@ -60,23 +58,49 @@ case $PROVIDER in
     ;;
 esac
 
+# Map provider type to our preferred prefix
+case $TYPE in
+  bug)
+    # GitHub default bug
+    # ADO default bug
+    PREFIX=bug
+    ;;
+  enhancement)
+    # GitHub default enhancement
+    PREFIX=feature
+    ;;    
+  product backlog item)
+    # ADO default PBI
+    PREFIX=feature
+    ;;        
+  feature)
+    # ADO default feature
+    PREFIX=feature
+    ;;            
+  *)
+    echo "Unrecognised type"
+    exit 1
+    ;;
+esac
+
 # Left pad the the ticket number with zeros
 TICKET_NUMBER_PADDED=$(printf "%04d\n" $TICKET_NUMBER)
 # Slugify the title 
 SLUGIFIED=$(echo "$TITLE" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z )
 # Assemble the branch name
-BRANCH_NAME=$TYPE/$TICKET_NUMBER_PADDED-$SLUGIFIED
+BRANCH_NAME=$PREFIX/$TICKET_NUMBER_PADDED-$SLUGIFIED
 
 # Create and checkout the branch simultaneously
 git checkout -b $BRANCH_NAME develop
 
 # Echo out a bunch of debug crap for now
-echo "REMOTE                 $REMOTE"
-echo "PROVIDER               $PROVIDER"
-echo "REPO                   $REPO"
-echo "TITLE                  $TITLE"
-echo "TYPE                   $TYPE"
-echo "TICKET_INFO            $TICKET_INFO"
-echo "TICKET_NUMBER_PADDED   $TICKET_NUMBER_PADDED"
-echo "SLUGIFIED              $SLUGIFIED"
-echo "BRANCH_NAME            $BRANCH_NAME"
+# echo "REMOTE                 $REMOTE"
+# echo "PROVIDER               $PROVIDER"
+# echo "REPO                   $REPO"
+# echo "TITLE                  $TITLE"
+# echo "TYPE                   $TYPE"
+# echo "PREFIX                 $PREFIX"
+# echo "TICKET_INFO            $TICKET_INFO"
+# echo "TICKET_NUMBER_PADDED   $TICKET_NUMBER_PADDED"
+# echo "SLUGIFIED              $SLUGIFIED"
+# echo "BRANCH_NAME            $BRANCH_NAME"
