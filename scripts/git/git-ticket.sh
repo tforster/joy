@@ -63,7 +63,7 @@ case $TYPE in
   bug)
     # GitHub default bug
     # ADO default bug
-    PREFIX=bug
+    PREFIX=issue
     ;;
   enhancement)
     # GitHub default enhancement
