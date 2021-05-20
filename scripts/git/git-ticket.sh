@@ -45,11 +45,11 @@ case $PROVIDER in
     # Get the organization name as the second path segment of the repo in the form v3/{organization}/{project}/{repository}
     ORGANIZATION=$(cut -d "/" -f2 <<< $REPO)
     # Get the ticket info from the Azure DevOps Boards API pre-filtered down to the two fields we are interested in
-    TICKET_INFO=$(az boards work-item show --id $TICKET_NUMBER --organization https://dev.azure.com/$ORGANIZATION/ --query '[fields."System.Title", fields."System.WorkItemType"]' -o json System.WorkItemType)
+    TICKET_INFO=$(az boards work-item show --id $TICKET_NUMBER --organization https://dev.azure.com/$ORGANIZATION/ --query '[fields."System.Title", fields."System.WorkItemType"]' -o json)
 
     # Parse out the title and type from the ticket info. Expected form is ["some title","some type"]
-    TITLE=$(TICKET_INFO | jq -r .[0])
-    TYPE=$(TICKET_INFO | jq -r .[1])
+    TITLE=$(echo $TICKET_INFO | jq -r .[0])
+    TYPE=$(echo $TICKET_INFO | jq -r .[1])
     ;;
   # TODO add support for GitLab here. Check out https://glab.readthedocs.io/en/latest/ to see if it will do what we need?
   *)
@@ -69,7 +69,7 @@ case $TYPE in
     # GitHub default enhancement
     PREFIX=feature
     ;;    
-  product backlog item)
+  "Product Backlog Item")
     # ADO default PBI
     PREFIX=feature
     ;;        
@@ -96,6 +96,7 @@ git checkout -b $BRANCH_NAME develop
 # Echo out a bunch of debug crap for now
 # echo "REMOTE                 $REMOTE"
 # echo "PROVIDER               $PROVIDER"
+# echo "ORGANIZATION           $ORGANIZATION"
 # echo "REPO                   $REPO"
 # echo "TITLE                  $TITLE"
 # echo "TYPE                   $TYPE"
