@@ -49,7 +49,7 @@ case $PROVIDER in
 
     # Parse out the title and type from the ticket info. Expected form is ["some title","some type"]
     TITLE=$(echo $TICKET_INFO | jq -r .[0])
-    TYPE=$(echo $TICKET_INFO | jq -r .[1])
+    TYPE=$(echo $TICKET_INFO | jq -r .[1] | tr '[:upper:]' '[:lower:]')
     ;;
   # TODO add support for GitLab here. Check out https://glab.readthedocs.io/en/latest/ to see if it will do what we need?
   *)
