@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "bashdb",
+      "request": "launch",
+      "name": "Debug joy.sh",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/src/joy.sh",
+      "args": ["info"]
+    }
+  ]
+}
