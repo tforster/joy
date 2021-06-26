@@ -7,7 +7,7 @@
 #
 ####################################################################################################################################
 
-# Obtain the absolute path to the commands folder regardless of where this script is executed from
+# Obtain the absolute path to the commands folder regardless of where this script is executed from including symlinks
 COMMANDS_DIR="$(dirname "$(readlink -f "$0")")"/commands
 
 ##

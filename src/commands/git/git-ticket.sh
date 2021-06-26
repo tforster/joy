@@ -20,8 +20,8 @@
 # - jq v1.6: A shell tool for parsing JSON. https://stedolan.github.io/jq/
 ###################################################################################################################################
 
-# Get the ticket number from the CLI as arg #1
-TICKET_NUMBER=$1 
+# Get the ticket number from the last CLI arg (accounts for Joy initiated as well as git initiated command)
+TICKET_NUMBER=${@: -1}
 # TODO Exit with an error if no ticket number argument was provided
 
 # Get the Git remote. Note this assumes origin exists and is the remote we want to work with in a multi-remote setting!

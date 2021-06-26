@@ -6,6 +6,9 @@ _The **J**ake and Tr**oy** devopsy utility._
 
 - [Prerequisites](#prerequisites)
 - [Setup and Configuration](#setup-and-configuration)
+- [Usage](#usage)
+  - [How It Works](#how-it-works)
+  - [.env Blocks](#env-blocks)
   - [Scripts](#scripts)
 - [Notes](#notes)
 - [Change Log](#change-log)
@@ -51,6 +54,16 @@ The versions listed for these prerequisites are current at the time of writing. 
         DB_PASSWORD={your-new-password-here}
         ...
         ```
+
+# Usage
+
+## How It Works
+
+opinionated view on environment settings per project, get read from *.env, the passed to scripts
+
+## .env Blocks
+
+Describe the different settings here.
 
 ## Scripts
 
