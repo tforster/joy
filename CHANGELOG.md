@@ -1,5 +1,7 @@
 # Change Log
 
+v2.0.0 **New Architecture** (2021-06-20)
+
 v1.2.0 **Git Ticket Command** (2021-05-15)
 
 - [Create git-ticket.sh to implement basic JoyFlow](https://dev.azure.com/techsmarts/TechSmarts/_workitems/edit/889)
