@@ -1,5 +1,3 @@
-#!/bin/bash
-
 ###################################################################################################################################
 # Displays information about a Joy project that the command is run from
 #
@@ -7,34 +5,22 @@
 #
 ###################################################################################################################################
 
-IS_JOY_PROJECT=0
+echo -e "\e[1mShell\e[0m"
+echo "Shell: $(getShell)"
 
+echo -e "\n\e[1mGit Information\e[0m"
+echo "Repository host: $(getRepo)"
 
+echo -e "\n\e[1mWebProducer\e[0m"
+if isWebProducer; then
+  echo "Enabled: True"
+else
+  echo "Enabled: False"
+fi
 
-
-
-
-
-function gitInfo() {
-
-  echo $(git remote -v) | while read -r a; do 
-    # Check for fatal then it's not even a repo
-
-    # Iterate lines and group origins of push/pull into one
-    
-    echo $a;
-    echo "X"
-  done
-
-}
-
-function wpeInfo() {
- echo nothings
-
-}
-
-function environment() {
-  cat .env
-}
-
-gitInfo
+echo -e "\n${FG_GREEN}${FS_UL}WPEngine${RESET_ALL}"
+if isWPEngine; then 
+  echo "Enabled: True"
+else
+  echo "Enabled: False"
+fi

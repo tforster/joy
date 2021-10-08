@@ -1,13 +1,12 @@
 {
-  "version": "0.2.0",
   "configurations": [
     {
       "type": "bashdb",
       "request": "launch",
-      "name": "Debug joy.sh",
+      "name": "Bash-Debug (hardcoded script name)",
       "cwd": "${workspaceFolder}",
-      "program": "${workspaceFolder}/src/joy.sh",
-      "args": ["info"]
+      "program": "${workspaceFolder}/path/to/script.sh",
+      "args": []
     }
   ]
 }
