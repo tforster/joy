@@ -1,26 +1,33 @@
-###################################################################################################################################
-# Displays information about a Joy project that the command is run from
-#
-# @usage joy info
-#
-###################################################################################################################################
+####################################################################################################################################
+# info.sh
+# - Displays useful information about the current directory, expanding any known Joy meta information that may be present.
+####################################################################################################################################
 
-echo -e "\e[1mShell\e[0m"
-echo "Shell: $(getShell)"
+printf "${fYellow}${fBold}Shell${f0}\n"
+printf "User Shell:      $(shellUser)\n"
+printf "Executing Shell: $(shellExecuting)\n"
+printf "Shell RC:        $(shellRc)\n\n"
 
-echo -e "\n\e[1mGit Information\e[0m"
-echo "Repository host: $(getRepo)"
+printf "${fYellow}${fBold}Git${f0}\n"
+printf "Remote:          $(gitRemote)\n"
+printf "Host URL:        $(gitHost)\n"
+printf "Host:            $(gitHostName)\n\n"
 
-echo -e "\n\e[1mWebProducer\e[0m"
+printf "${fYellow}${fBold}WebProducer${f0}\n"
 if isWebProducer; then
-  echo "Enabled: True"
+  printf "Enabled:         True\n"
+  printf ".env:\n"
+  cat webproducer/.env | indent  
+  printf "\n\n"
 else
-  echo "Enabled: False"
+  printf "Enabled:         False\n\n"
 fi
 
-echo -e "\n${FG_GREEN}${FS_UL}WPEngine${RESET_ALL}"
+printf "${fYellow}${fBold}WPEngine${f0}\n"
 if isWPEngine; then 
-  echo "Enabled: True"
+  printf "Enabled:         True\n"
+  printf ".env:\n"
+  cat .env | indent    
 else
-  echo "Enabled: False"
+  printf "Enabled:         False\n\n"
 fi

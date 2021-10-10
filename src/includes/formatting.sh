@@ -1,13 +1,14 @@
-###################################################################################################################################
-# Adds colour capability when included in other scripts
+####################################################################################################################################
 # formatting.sh
-# - Echoes the text provided in colour and format selected
-#
-# @usage echo -e "${FOREGROUND_COLOUR}${BACKGROUND_COLOUR}${STYLE}Hello world!${RESET_ALL}"
-#
-###################################################################################################################################
+# - Common functions to help with formatting output
+####################################################################################################################################
 
-# Syntax: echo -e "${FOREGROUND_COLOUR}${BACKGROUND_COLOUR}${STYLE}Hello world!${RESET_ALL}"
+fEsc="\033"
+
+fYellow="${fEsc}[33m"
+fUnderline="${fEsc}[4m"
+fBold="${fEsc}[1m"
+f0="${fEsc}[0m"
 
 # Escape sequence and resets
 ESC_SEQ="\x1b["

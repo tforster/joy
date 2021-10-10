@@ -1,9 +1,8 @@
-##
-# help
-# - Renders some simple  help text to stdout
-#
-# @param {string} command: The optional command to display help for. If command is ommitted then generic help is rendered.
-##
+####################################################################################################################################
+# help.sh
+# - Displays command specific help if available, otherwise a list of commands.
+####################################################################################################################################
+
 function help() {
   if [ -z $1 ]; then
     find $commandsDir -name '*.sh' | while IFS=$'\n' read -r FULL_PATH; do

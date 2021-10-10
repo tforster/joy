@@ -3,10 +3,13 @@
     {
       "type": "bashdb",
       "request": "launch",
-      "name": "Bash-Debug (hardcoded script name)",
+      "name": "Debug joy-cli.sh",
       "cwd": "${workspaceFolder}",
-      "program": "${workspaceFolder}/path/to/script.sh",
-      "args": []
+      "program": "${workspaceFolder}/src/joy-cli.sh",
+      "args": [
+        "cw",
+        "ford"
+      ]
     }
   ]
 }

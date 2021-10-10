@@ -1,4 +1,7 @@
-#!/bins/sh
+####################################################################################################################################
+# create-certs.sh
+# - Creates a self-signed certificate. Useful when paired with http2-server
+####################################################################################################################################
 
 # Get the specified path or default to current execution path
 path=${1:-.}

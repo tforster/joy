@@ -43,6 +43,6 @@ elif [ $PUBLISH_TARGET = "stage" ]; then
 
 else
   # Publish locally
-  purple "Building and publishing to dist. Use 'npr wp http2-server' to view locally."
+  purple "Building and publishing to dist. Use 'joy wp http2-server' to view locally."
   node webproducer/index
 fi

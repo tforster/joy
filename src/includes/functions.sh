@@ -3,18 +3,9 @@
 # - Common functions to reuse
 ####################################################################################################################################
 
+# Include dependencies
+. $cliDir/includes/shell.sh
 . $cliDir/includes/git.sh
-
-getShell() { 
-  if [ -n "`$SHELL -c 'echo $ZSH_VERSION'`" ]; then
-    echo zsh
-  elif [ -n "`$SHELL -c 'echo $BASH_VERSION'`" ]; then
-    echo bash
-  else
-    ech unknown
-  fi
-}
-
 
 # isWPEngine
 # @returns {boolean}: True if the current directory contains at least one WPEngine environment reference
@@ -42,3 +33,6 @@ dotEnv() {
     set +o allexport
   fi
 }
+
+# Crude function to help layout the output of joy info
+indent() { sed 's/^/                 /'; }
