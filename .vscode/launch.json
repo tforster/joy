@@ -4,11 +4,13 @@
       "type": "bashdb",
       "request": "launch",
       "name": "Debug joy-cli.sh",
-      "cwd": "${workspaceFolder}",
+      //"cwd": "${workspaceFolder}",
+      "cwd": "/home/tforster/dev/Wazzio/Wazzio/WazzCards/api.wazzcards.com",
       "program": "${workspaceFolder}/src/joy-cli.sh",
       "args": [
-        "cw",
-        "ford"
+        "git",
+        "ticket",
+        "1377"
       ]
     }
   ]
