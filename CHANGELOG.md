@@ -2,6 +2,7 @@
 
 # Table of Contents <!-- omit in toc -->
 
+- [v2.1.1 **Fixed AWS references in wp deploy** (2021-10-16)](#v211-fixed-aws-references-in-wp-deploy-2021-10-16)
 - [v2.1.0 **Stabilised New Architecture** (2021-10-09)](#v210-stabilised-new-architecture-2021-10-09)
 - [v2.0.0 **New Architecture** (2021-06-20)](#v200-new-architecture-2021-06-20)
 - [v1.2.0 **Git Ticket Command** (2021-05-15)](#v120-git-ticket-command-2021-05-15)
@@ -13,6 +14,10 @@
 - [v0.3.0 **NPX'fied** (2019-05-16)](#v030-npxfied-2019-05-16)
 - [v0.2.0 **Local environment settings** (2019-05-07)](#v020-local-environment-settings-2019-05-07)
 - [v0.1.0 **Really early PoC** (2019-04-05)](#v010-really-early-poc-2019-04-05)
+
+## v2.1.1 **Fixed AWS references in wp deploy** (2021-10-16)
+
+The deploy script was attempting to use an installed version of the AWS CLI that no longer exists.
 
 ## v2.1.0 **Stabilised New Architecture** (2021-10-09)
 

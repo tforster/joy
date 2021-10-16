@@ -6,6 +6,7 @@
 fEsc="\033"
 
 fYellow="${fEsc}[33m"
+fRed="${fEsc}[31m"
 fUnderline="${fEsc}[4m"
 fBold="${fEsc}[1m"
 f0="${fEsc}[0m"
