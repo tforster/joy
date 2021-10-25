@@ -7,6 +7,7 @@ _The **J**ake and Tr**oy** devopsy utility._
 - [Prerequisites](#prerequisites)
 - [Setup and Configuration](#setup-and-configuration)
 - [Usage](#usage)
+  - [Github Flow](#github-flow)
   - [How It Works](#how-it-works)
   - [Commands](#commands)
 - [Change Log](#change-log)
@@ -39,6 +40,19 @@ The versions listed for these prerequisites are current at the time of writing. 
 # Usage
 
 Joy can be thought of as a bash task runner that can launch scripts that are grouped together in families.
+
+## Github Flow
+
+Starting with this release the Joy project will be switching to Github Flow for managing changes. Github Flow differs from some traditional Git flows in that it does not use a long running develop branch. Instead, every merge to main is considered deployable and *should* be deployed.
+
+1. Create a feature branch from main. To ensure consistency in naming convention use `git joy ticket {ticket-number}`.
+2. Push the feature branch upstream to origin
+3. Make code changes to the local feature branch, commit often and update the upstream branch often.
+4. When ready, create a Pull Request and request a review.
+5. Act on the Pull Request feedback, committing often.
+6. When the Pull request has been approved, deploy to production.
+7. If there is a failure, redeploy the current tip of the main branch to production and revisit the code in your local branch, restarting the process.
+8. Otherwise, complete the Pull Request to merge the code back to main, thus updating the tip of main.
 
 ## How It Works
 

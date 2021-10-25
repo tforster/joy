@@ -1,6 +1,6 @@
 {
   "name": "@tforster/joy",
-  "version": "2.1.1",
+  "version": "2.1.0",
   "description": "The [J]ake and Tr[oy] devopsy utility.",
   "scripts": {
     "install": "chmod +x scripts/*.sh && chmod +x src/*.sh && scripts/install.sh",

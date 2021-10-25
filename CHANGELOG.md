@@ -1,9 +1,8 @@
 # Change Log <!-- omit in toc -->
 
-# Table of Contents <!-- omit in toc -->
+## Table of Contents <!-- omit in toc -->
 
-- [v2.1.1 **Fixed AWS references in wp deploy** (2021-10-16)](#v211-fixed-aws-references-in-wp-deploy-2021-10-16)
-- [v2.1.0 **Stabilised New Architecture** (2021-10-09)](#v210-stabilised-new-architecture-2021-10-09)
+- [v2.1.0 **Relaunch** (2021-10-09)](#v210-relaunch-2021-10-09)
 - [v2.0.0 **New Architecture** (2021-06-20)](#v200-new-architecture-2021-06-20)
 - [v1.2.0 **Git Ticket Command** (2021-05-15)](#v120-git-ticket-command-2021-05-15)
 - [v1.1.0 **Joy Private Docker Registry** (2019-10-02)](#v110-joy-private-docker-registry-2019-10-02)
@@ -15,13 +14,18 @@
 - [v0.2.0 **Local environment settings** (2019-05-07)](#v020-local-environment-settings-2019-05-07)
 - [v0.1.0 **Really early PoC** (2019-04-05)](#v010-really-early-poc-2019-04-05)
 
-## v2.1.1 **Fixed AWS references in wp deploy** (2021-10-16)
+## v2.1.0 **Relaunch** (2021-10-09)
 
-The deploy script was attempting to use an installed version of the AWS CLI that no longer exists.
+Features
 
-## v2.1.0 **Stabilised New Architecture** (2021-10-09)
+- [Add CLIs as Docker images](https://dev.azure.com/techsmarts/TechSmarts/_workitems/edit/916): The AWS, GitHub and Azure DevOps CLIs are now available from within Joy with no install-time dependencies. Each is run in its own isolated Docker container.
+- [Create new cw top-level command](https://dev.azure.com/techsmarts/TechSmarts/_workitems/edit/907): Joy installs a `cw` function that works with a new `~/.joy.json` file containing bookmarked working directories. `cw {bookmark}` instantly switches the current directory to the bookmarked directory.
+- [Merge changes from forked NPR CLI](https://dev.azure.com/techsmarts/TechSmarts/_workitems/edit/910): Earlier this year Joy was forked for use by the development team at [NATIONAL](https://www.national.ca/). However, it was becoming onerous to manage changes back and forth. NPR changes have been merged back into Joy and the team has switched from the NPR fork to this repository.
+- [Relaunch Joy CLI](https://dev.azure.com/techsmarts/TechSmarts/_workitems/edit/924): The Joy project code, repository and README have been cleaned up.
 
-- [Create new cd top-level command](https://dev.azure.com/techsmarts/TechSmarts/_workitems/edit/907)
+Bug Fixes
+
+- [wp deploy does not work with new docker AWS CLI](https://dev.azure.com/techsmarts/TechSmarts/_workitems/edit/923)
 
 ## v2.0.0 **New Architecture** (2021-06-20)
 
