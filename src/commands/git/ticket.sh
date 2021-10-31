@@ -15,7 +15,7 @@ remote=$(gitRemote)
 case $(gitHostName) in
   github)
     # Get the ticket info from the GitHub issue
-    ticketInfo=$(gh issue view $ticketNumber --json title,labels)
+    ticketInfo=$($commandsDir/gh.sh issue view $ticketNumber --json title,labels)
     # Parse out the title and type from the ticket info 
     title=$(echo $ticketInfo | jq -r '.title') 
     type=$(echo $ticketInfo | jq -r '.labels[0].name' )
@@ -25,7 +25,7 @@ case $(gitHostName) in
     repo=$(cut -d ":" -f2 <<< $remote)
     organisation=$(cut -d "/" -f2 <<< $repo)
     # Get the ticket info from the Azure DevOps Boards API pre-filtered down to the two fields we are interested in
-    ticketInfo=$(docker run -it --rm az:latest boards work-item show --id $ticketNumber --organization https://dev.azure.com/$organisation/ --query '[fields."System.Title", fields."System.WorkItemType"]' -o json)
+    ticketInfo=$($commandsDir/az.sh boards work-item show --id $ticketNumber --organization https://dev.azure.com/$organisation/ --query '[fields."System.Title", fields."System.WorkItemType"]' -o json)
     # Parse out the title and type from the ticket info. Expected form is ["some title","some type"]
     title=$(echo $ticketInfo | jq -r .[0])
     type=$(echo $ticketInfo | jq -r .[1] | tr '[:upper:]' '[:lower:]')

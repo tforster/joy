@@ -21,10 +21,7 @@ The versions listed for these prerequisites are current at the time of writing. 
 - [Docker v20.10.9](https://docs.docker.com/get-docker/)
 - [Docker Compose v1.29.2](https://docs.docker.com/compose/install/)
 - [Git 2.31.1](https://git-scm.com/downloads)
-- [GitHub CLI](https://github.com/cli/cli): Required if you wish to use `joy git ticket` with GitHub repositories.
 - [jq v1.6](https://stedolan.github.io/jq/): A shell tool for parsing JSON.
-- [Microsoft Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli): Required if you wish to use `joy git ticket` with Microsoft Azure DevOps Boards
-  - [Azure DevOps Extension for Azure CLI](https://github.com/Azure/azure-devops-cli-extension): Following the installation of the Microsoft Azure CLI run `az extension add --name azure-devops`
 - [Node.js v16.3.0 with NPM 7.15.1](https://nodejs.org/en/download/)
 - [Bash Debug v0.3.9](https://marketplace.visualstudio.com/items?itemName=rogalmic.bash-debug): Required if you are developing and debugging with VSCode.
 
@@ -36,6 +33,9 @@ The versions listed for these prerequisites are current at the time of writing. 
     `npm install`
 
     _Note that the install process will also symlink the scripts in the src folder to your path making the CLI available from any project directory._
+1. Optionally build any of the Dockerised CLI images that will be used. 
+   1. GitHub: Build src/docker/gh.dockerfile as gh:latest to make the GitHub CLI available at `joy gh`. Note that the GitHub CLI is required if you wish to use `joy git ticket` with a GitHub repository.
+   2. Azure DevOps: Build src/docker/az.dockerfile as az:latest to make the Azure DevOps CLI available at `joy az`. Note that the Azure DevOps CLI is required if you wish to use `joy git ticket` with an Azure DevOps hosted Git repository.
 
 # Usage
 
@@ -68,7 +68,7 @@ Most commands are invoked directly from joy and a subcommand family. Some comman
 | joy    | aws          | cloudfront-new-distribution     | Create a new CloudFront distribution                              |
 | joy    | aws          | dynamodb-new-table              | Create a new DynamoDB table                                       |
 | joy    | aws          | route53-cloudfront-alias        | Alias a CloudFront distribution to a Route53 CNAME                |
-| joy    | aws          | route53-new-zone                | Createa  new Route53 hosted zone                                  |
+| joy    | aws          | route53-new-zone                | Create a  new Route53 hosted zone                                 |
 | joy    | aws          | s3-new-web                      | Create a new S3 bucket configured for static web hosting          |
 | joy    | git          | git-ticket                      | Create a new branch based on the provided ticket number           |
 | joy    | wp           | deploy                          | Deploy a WebProducer application to S3                            |
@@ -85,6 +85,9 @@ Most commands are invoked directly from joy and a subcommand family. Some comman
 | joy    | info         |                                 | Get information about the current directroy                       |
 | cw     |              |                                 | Change the current working directory to one previously bookmarked |
 
+# Known Issues
+
+Since the AWS CLI is now invoked from `joy aws` all the custom AWS scripts are blocked as their commands get passed the CLI and are invalid. This will be addressed in an upcoming release.
 # Change Log
 
 See [CHANGELOG.md](CHANGELOG.md)
